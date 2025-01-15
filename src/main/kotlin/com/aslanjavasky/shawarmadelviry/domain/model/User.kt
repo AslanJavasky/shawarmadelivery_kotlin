@@ -1,10 +1,10 @@
 package com.aslanjavasky.shawarmadelviry.domain.model
 
 data class User(
-    var id: Long,
-    var name: String,
-    var email: String,
-    var password: String,
-    var telegram: String,
-    var address: String
+    var id: Long?=null,
+    var name: String?=null,
+    var email: String?=null,
+    var password: String?=null,
+    var telegram: String?=null,
+    var address: String?=null
 )

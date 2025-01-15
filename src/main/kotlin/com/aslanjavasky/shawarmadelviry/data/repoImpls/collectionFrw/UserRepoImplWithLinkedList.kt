@@ -2,19 +2,24 @@ package com.aslanjavasky.shawarmadelviry.data.repoImpls.collectionFrw
 
 import com.aslanjavasky.shawarmadelviry.domain.model.User
 import com.aslanjavasky.shawarmadelviry.domain.repo.UserRepo
+import java.util.LinkedList
 
-class UserRepoImpl : UserRepo {
+class UserRepoImplWithLinkedList : UserRepo {
 
-    private val users = mutableListOf<User>()
+    private val users: MutableList<User> = LinkedList()
 
     override fun saveUser(user: User): User {
         users.add(user)
-        println("User created!")
+        println("User created in Linkedlist!")
         return user
     }
 
     override fun deleteUser(user: User) {
-        users.remove(user)
+        if (users.remove(user)){
+            println("User deleted in Linkedlist!")
+        }else{
+            println("User not found in Linkedlist!")
+        }
     }
 
     override fun updateUser(user: User): User {
