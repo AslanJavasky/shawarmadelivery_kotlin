@@ -19,7 +19,7 @@ class ShawarmaConf {
     fun UserRepoWithLinkedList():UserRepo = UserRepoImplWithLinkedList()
 
     @Bean
-    fun userService() = UserService()
+    fun userService() = UserService(UserRepo())
 
     @Bean
     fun userController(userService: UserService) = UserController(userService)
