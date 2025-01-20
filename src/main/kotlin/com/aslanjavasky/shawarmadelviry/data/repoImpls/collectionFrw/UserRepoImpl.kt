@@ -2,7 +2,9 @@ package com.aslanjavasky.shawarmadelviry.data.repoImpls.collectionFrw
 
 import com.aslanjavasky.shawarmadelviry.domain.model.User
 import com.aslanjavasky.shawarmadelviry.domain.repo.UserRepo
+import org.springframework.stereotype.Repository
 
+@Repository("URwAL")
 class UserRepoImpl : UserRepo {
 
     private val users = mutableListOf<User>()
@@ -14,6 +16,7 @@ class UserRepoImpl : UserRepo {
     }
 
     override fun deleteUser(user: User) {
+        println("User deleted!")
         users.remove(user)
     }
 

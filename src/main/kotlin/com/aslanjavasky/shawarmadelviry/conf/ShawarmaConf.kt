@@ -12,20 +12,20 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class ShawarmaConf {
 
-    @Bean(name = ["URwAL"])
-    fun UserRepo():UserRepo = UserRepoImpl()
+//    @Bean(name = ["URwAL"])
+//    fun UserRepo():UserRepo = UserRepoImpl()
 
-    @Bean("URwLL")
-    fun UserRepoWithLinkedList():UserRepo = UserRepoImplWithLinkedList()
+//    @Bean("URwLL")
+//    fun UserRepoWithLinkedList():UserRepo = UserRepoImplWithLinkedList()
 
-    @Bean
-    fun userService() = UserService(UserRepo())
+//    @Bean
+//    fun userService() = UserService(UserRepo())
 
-    @Bean
-    fun userController(userService: UserService) = UserController(userService)
+//    @Bean
+//    fun userController(userService: UserService) = UserController(userService)
 
-    @Bean
-    fun CommandLineRunner(userController: UserController) =
-        ApplicationStartupRunner(userController)
+//    @Bean
+//    fun CommandLineRunner(userController: UserController) =
+//        ApplicationStartupRunner(userController)
 
 }

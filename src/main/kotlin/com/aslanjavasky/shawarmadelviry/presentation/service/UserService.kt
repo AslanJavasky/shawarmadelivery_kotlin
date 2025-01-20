@@ -1,11 +1,11 @@
 package com.aslanjavasky.shawarmadelviry.presentation.service
 
-import com.aslanjavasky.shawarmadelviry.data.repoImpls.collectionFrw.UserRepoImpl
 import com.aslanjavasky.shawarmadelviry.domain.interractor.UserInterractor
 import com.aslanjavasky.shawarmadelviry.domain.repo.UserRepo
-import org.springframework.context.ApplicationContext
-import org.springframework.context.ApplicationContextAware
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Service
 
+@Service
 class UserService(
-    repo: UserRepo
+    @Qualifier("URwAL") repo: UserRepo
 ) : UserInterractor(repo)

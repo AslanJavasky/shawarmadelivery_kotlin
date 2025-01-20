@@ -2,8 +2,10 @@ package com.aslanjavasky.shawarmadelviry.data.repoImpls.collectionFrw
 
 import com.aslanjavasky.shawarmadelviry.domain.model.User
 import com.aslanjavasky.shawarmadelviry.domain.repo.UserRepo
+import org.springframework.stereotype.Repository
 import java.util.LinkedList
 
+@Repository("URwLL")
 class UserRepoImplWithLinkedList : UserRepo {
 
     private val users: MutableList<User> = LinkedList()
