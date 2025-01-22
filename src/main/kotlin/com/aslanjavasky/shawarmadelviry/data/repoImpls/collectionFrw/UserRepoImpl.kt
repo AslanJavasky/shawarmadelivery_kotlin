@@ -2,21 +2,24 @@ package com.aslanjavasky.shawarmadelviry.data.repoImpls.collectionFrw
 
 import com.aslanjavasky.shawarmadelviry.domain.model.User
 import com.aslanjavasky.shawarmadelviry.domain.repo.UserRepo
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 
 @Repository("URwAL")
 class UserRepoImpl : UserRepo {
 
     private val users = mutableListOf<User>()
+    private val log=LoggerFactory.getLogger(UserRepoImpl::class.java)
 
     override fun saveUser(user: User): User {
         users.add(user)
-        println("User created!")
+        log.info("User created!")
         return user
     }
 
     override fun deleteUser(user: User) {
-        println("User deleted!")
+        log.info("User deleted!")
         users.remove(user)
     }
 

@@ -2,6 +2,7 @@ package com.aslanjavasky.shawarmadelviry.data.repoImpls.collectionFrw
 
 import com.aslanjavasky.shawarmadelviry.domain.model.User
 import com.aslanjavasky.shawarmadelviry.domain.repo.UserRepo
+import mu.KotlinLogging
 import org.springframework.stereotype.Repository
 import java.util.LinkedList
 
@@ -9,18 +10,19 @@ import java.util.LinkedList
 class UserRepoImplWithLinkedList : UserRepo {
 
     private val users: MutableList<User> = LinkedList()
+    private val log= KotlinLogging.logger("UserRepoImplWithLinkedList")
 
     override fun saveUser(user: User): User {
         users.add(user)
-        println("User created in Linkedlist!")
+        log.info("User created in Linkedlist!")
         return user
     }
 
     override fun deleteUser(user: User) {
         if (users.remove(user)){
-            println("User deleted in Linkedlist!")
+            log.info("User deleted in Linkedlist!")
         }else{
-            println("User not found in Linkedlist!")
+            log.info("User not found in Linkedlist!")
         }
     }
 
