@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component
 
 @Component
 class ApplicationStartupRunner(
-    private val userController: UserController
+//    private val userController: UserController
 ) : CommandLineRunner {
 
     override fun run(vararg args: String?) {
-        userController.createUser(User())
-        userController.deleteUser(User())
+//        userController.createUser(User())
+//        userController.deleteUser(User())
     }
 }
