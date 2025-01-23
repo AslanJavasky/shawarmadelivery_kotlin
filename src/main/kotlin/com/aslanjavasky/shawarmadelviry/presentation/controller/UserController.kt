@@ -1,5 +1,6 @@
 package com.aslanjavasky.shawarmadelviry.presentation.controller
 
+import com.aslanjavasky.shawarmadelviry.conf.AuthUtils
 import com.aslanjavasky.shawarmadelviry.domain.model.User
 import com.aslanjavasky.shawarmadelviry.presentation.service.UserService
 import org.springframework.stereotype.Controller
@@ -9,7 +10,8 @@ import org.springframework.web.bind.annotation.*
 @Controller
 @RequestMapping("/users")
 class UserController(
-    private val userService: UserService
+    private val userService: UserService,
+    private val authUtils: AuthUtils
 ) {
 
     @GetMapping("/register")
@@ -22,7 +24,9 @@ class UserController(
 
     @PostMapping("/register")
     fun registerUser(@ModelAttribute user: User): String {
-        userService.createUser(user)
+        val encodedPassword = user.password?.let { authUtils.encodePassword(it) }
+        val updatedUser = user.copy(password = encodedPassword)
+        userService.createUser(updatedUser)
         return "redirect:/users/login"
     }
 
@@ -41,7 +45,7 @@ class UserController(
     ): String {
         return try {
             val user = userService.getUserByEmail(email)
-            if (user!!.password == password) {
+            if (authUtils.authenticate(password, user!!.password!!)) {
                 "redirect:/menu"
             } else {
                 model.addAttribute("error", "Invalid email or password")
@@ -54,8 +58,8 @@ class UserController(
     }
 
     @PostMapping("/delete")
-    fun deleteUser(@RequestParam email: String):String{
-        val user=userService.getUserByEmail(email)
+    fun deleteUser(@RequestParam email: String): String {
+        val user = userService.getUserByEmail(email)
         user?.let {
             userService.deleteUser(user)
         }
