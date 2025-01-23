@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+<h1>Login</h1>
+<form th:action="@{/users/login}" th:method="post">
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <button type="button" onclick="deleteUser()">Delete</button>
+    </div>
+    <br/>
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <br/>
+    <button type="submit">Login</button>
+</form>
+
+<div th:if="${error}" style="color:red;">
+    <p th:text="${error}"></p>
+</div>
+
+
+<script>
+    function deleteUser(){
+        var email=document.getElementById('email').value;
+
+        if(email){
+            var form=document.createElement('form');
+            form.method='post';
+            form.action='/users/delete';
+
+            var input=document.createElement('input');
+            input.type='hidden';
+            input.name='email';
+            input.value=email;
+
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+</script>
+</body>
+</html>
