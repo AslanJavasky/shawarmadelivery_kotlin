@@ -3,7 +3,9 @@ package com.aslanjavasky.shawarmadelviry.data.repoImpls.collectionFrw
 import com.aslanjavasky.shawarmadelviry.domain.model.MenuItem
 import com.aslanjavasky.shawarmadelviry.domain.model.MenuSection
 import com.aslanjavasky.shawarmadelviry.domain.repo.MenuItemRepo
+import org.springframework.stereotype.Repository
 
+@Repository
 class MenuItemRepoImpl : MenuItemRepo {
 
     private val items = mutableListOf<MenuItem>()
