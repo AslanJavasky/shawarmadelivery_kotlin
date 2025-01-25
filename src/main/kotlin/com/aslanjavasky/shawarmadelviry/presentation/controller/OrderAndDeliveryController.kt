@@ -4,10 +4,7 @@ import com.aslanjavasky.shawarmadelviry.domain.model.Delivery
 import com.aslanjavasky.shawarmadelviry.domain.model.Order
 import com.aslanjavasky.shawarmadelviry.domain.model.OrderStatus
 import com.aslanjavasky.shawarmadelviry.domain.model.User
-import com.aslanjavasky.shawarmadelviry.presentation.service.DeliveryService
-import com.aslanjavasky.shawarmadelviry.presentation.service.MenuItemService
-import com.aslanjavasky.shawarmadelviry.presentation.service.OrderService
-import com.aslanjavasky.shawarmadelviry.presentation.service.UserService
+import com.aslanjavasky.shawarmadelviry.presentation.service.*
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,7 +18,8 @@ class OrderAndDeliveryController(
     private val menuItemService: MenuItemService,
     private val userService: UserService,
     private val orderService: OrderService,
-    private val deliveryService: DeliveryService
+    private val deliveryService: DeliveryService,
+    private val sessionInfoService: SessionInfoService
 ) {
     @PostMapping("/order")
     fun showOrderForm(
@@ -34,30 +32,36 @@ class OrderAndDeliveryController(
                 menuItemService.getMenuItemById(id)
             }
         }
-        val totalPrice = selectedMenuItems.sumOf { it!!.price }
-
-        val order = Order().apply {
-            status = OrderStatus.NEW
-            itemList = selectedMenuItems
-            this.totalPrice = totalPrice
-            dateTime = LocalDateTime.now()
-        }
-        model.addAttribute("order",order)
-        model.addAttribute("user", User())
-        model.addAttribute("delivery", Delivery())
+        sessionInfoService.cart=selectedMenuItems
+        model.addAttribute("sessionInfoService",sessionInfoService)
         return "order"
     }
 
     @PostMapping("/order/submit")
-    fun orderSubmit(
-        @ModelAttribute delivery: Delivery,
-        @ModelAttribute user:User,
-        @ModelAttribute order: Order
-    ): String {
-        order.user=user
-        delivery.order=order
-        userService.createUser(user)
-        orderService.createOrder(order)
+    fun orderSubmit(): String {
+
+        val user= userService.getUserByEmail(sessionInfoService.email!!)?.apply {
+            name=sessionInfoService.username
+            address=sessionInfoService.address
+            phone=sessionInfoService.phone
+        }
+
+        val order = Order(
+            status = OrderStatus.NEW,
+            itemList = sessionInfoService.cart,
+            totalPrice = sessionInfoService.getTotalPrice(),
+            dateTime = LocalDateTime.now(),
+            user=user
+        )
+        val delivery=Delivery(
+            dateTime = LocalDateTime.now(),
+            address = sessionInfoService.address,
+            phone= sessionInfoService.phone,
+            order = order
+        )
+
+        userService.createUser(order.user!!)
+        orderService.createOrder(delivery.order!!)
         deliveryService.createDelivery(delivery)
         return "redirect:/menu"
     }

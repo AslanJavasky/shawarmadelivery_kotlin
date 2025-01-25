@@ -15,21 +15,21 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="menuItem : ${order.itemList}">
+    <tr th:each="menuItem : ${sessionInfoService.cart}">
         <td th:text="${menuItem.name}"></td>
         <td th:text="${menuItem.price} + ' руб.'"></td>
     </tr>
     </tbody>
 </table>
 <div class="total">
-    Total: <span th:text="${order.totalPrice} + ' руб.'"/>
+    Total: <span th:text="${sessionInfoService.getTotalPrice()} + ' руб.'"/>
 </div>
 
 <h2>Please, enter date for delivery:</h2>
-<form th:action="@{/order/submit}" th:method="post" th:object="${delivery}">
+<form th:action="@{/order/submit}" th:method="post" th:object="${sessionInfoService}">
     <div>
         <label for="username">Username:</label>
-        <input type="text" id="username" name="username" th:field="${user.name}"/>
+        <input type="text" id="username" name="username" th:field="*{username}"/>
     </div>
     <div>
         <label for="address">Address:</label>

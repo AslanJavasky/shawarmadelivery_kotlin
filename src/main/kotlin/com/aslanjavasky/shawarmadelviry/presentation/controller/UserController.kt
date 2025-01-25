@@ -2,6 +2,7 @@ package com.aslanjavasky.shawarmadelviry.presentation.controller
 
 import com.aslanjavasky.shawarmadelviry.conf.AuthUtils
 import com.aslanjavasky.shawarmadelviry.domain.model.User
+import com.aslanjavasky.shawarmadelviry.presentation.service.SessionInfoService
 import com.aslanjavasky.shawarmadelviry.presentation.service.UserService
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -11,7 +12,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/users")
 class UserController(
     private val userService: UserService,
-    private val authUtils: AuthUtils
+    private val authUtils: AuthUtils,
+    private val sessionInfoService: SessionInfoService
 ) {
 
     @GetMapping("/register")
@@ -27,6 +29,7 @@ class UserController(
         val encodedPassword = user.password?.let { authUtils.encodePassword(it) }
         val updatedUser = user.copy(password = encodedPassword)
         userService.createUser(updatedUser)
+        sessionInfoService.setUserInfo(user)
         return "redirect:/users/login"
     }
 
@@ -46,6 +49,7 @@ class UserController(
         return try {
             val user = userService.getUserByEmail(email)
             if (authUtils.authenticate(password, user!!.password!!)) {
+                sessionInfoService.setUserInfo(user)
                 "redirect:/menu"
             } else {
                 model.addAttribute("error", "Invalid email or password")
