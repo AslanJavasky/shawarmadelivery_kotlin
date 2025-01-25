@@ -2,7 +2,9 @@ package com.aslanjavasky.shawarmadelviry.data.repoImpls.collectionFrw
 
 import com.aslanjavasky.shawarmadelviry.domain.model.Delivery
 import com.aslanjavasky.shawarmadelviry.domain.repo.DeliveryRepo
+import org.springframework.stereotype.Repository
 
+@Repository
 class DeliveryRepoImpl : DeliveryRepo {
 
     private val deliveries = mutableListOf<Delivery>()

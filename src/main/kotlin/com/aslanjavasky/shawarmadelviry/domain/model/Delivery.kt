@@ -3,8 +3,9 @@ package com.aslanjavasky.shawarmadelviry.domain.model
 import java.time.LocalDateTime
 
 data class Delivery(
-    var id:Long,
-    var address:String,
-    var dateTime: LocalDateTime,
-    var order:Order
+    var id:Long?=null,
+    var address:String?=null,
+    var phone:String?=null,
+    var dateTime: LocalDateTime?=null,
+    var order:Order?=null
 )

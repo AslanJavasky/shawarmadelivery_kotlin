@@ -6,20 +6,22 @@
 </head>
 <body>
 <h1> Menu </h1>
-<div th:each="section: ${menuItemsBySection}">
-    <h2 th:text="${section.key}"> Section:</h2>
-    <div class="menu-section">
-        <div th:each="item : ${section.value}" class="menu-item">
-            <input type="checkbox" th:id="|item_${item.id}|" th:name="|item_${item.id}|" onchange="toggleQuantity(this)">
-            <label th:for="|item_${item.id}|" th:text="${item.name}"></label>
-            <span class="price" th:text="${item.price} + 'руб.'"></span>
-            <input type="number" th:id="|quantity_${item.id}|" th:name="|quantity_${item.id}|"
-                   min="1" value="1" disabled>
-        </div>
-    </div>
-</div>
 
 <form th:action="@{/order}" th:method="post">
+    <div th:each="section: ${menuItemsBySection}">
+        <h2 th:text="${section.key}"> Section:</h2>
+        <div class="menu-section">
+            <div th:each="item : ${section.value}" class="menu-item">
+                <input type="checkbox" th:id="|item_${item.id}|" th:name="selectedId" th:value="${item.id}"
+                       onchange="toggleQuantity(this)">
+                <label th:for="|item_${item.id}|" th:text="${item.name}"></label>
+                <span class="price" th:text="${item.price} + 'руб.'"></span>
+                <input type="number" th:id="|quantity_${item.id}|" th:name="quantities"
+                       min="1" value="1" disabled>
+            </div>
+        </div>
+    </div>
+    <br/>
     <button type="submit">Place order</button>
 </form>
 

@@ -4,7 +4,9 @@ import com.aslanjavasky.shawarmadelviry.domain.model.Order
 import com.aslanjavasky.shawarmadelviry.domain.model.OrderStatus
 import com.aslanjavasky.shawarmadelviry.domain.model.User
 import com.aslanjavasky.shawarmadelviry.domain.repo.OrderRepo
+import org.springframework.stereotype.Repository
 
+@Repository
 class OrderRepoImpl : OrderRepo {
 
     private val orders = mutableListOf<Order>()
@@ -21,10 +23,10 @@ class OrderRepoImpl : OrderRepo {
     }
 
     override fun getOrdersByUser(user: User): List<Order> {
-        return orders.filter { it.user.id == user.id }
+        return orders.filter { it.user!!.id == user.id }
     }
 
     override fun getOrderByStatus(orderStatus: OrderStatus): List<Order> {
-        return orders.filter { it.status.name == orderStatus.name }
+        return orders.filter { it.status!!.name == orderStatus.name }
     }
 }
