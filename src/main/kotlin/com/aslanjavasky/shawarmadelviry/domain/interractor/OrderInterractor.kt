@@ -12,4 +12,9 @@ open class OrderInterractor(
     fun changeOrder(order: Order) = repo.updateOrder(order)
     fun getOrdersByStatus(orderStatus: OrderStatus) = repo.getOrderByStatus(orderStatus)
     fun getOrderByUser(user: User) = repo.getOrdersByUser(user)
+    fun updateOrderStatus(id: Long, status: OrderStatus) {
+        repo.updateOrderStatus(id, status)
+    }
+
+
 }

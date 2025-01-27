@@ -5,13 +5,16 @@ import com.aslanjavasky.shawarmadelviry.domain.model.OrderStatus
 import com.aslanjavasky.shawarmadelviry.domain.model.User
 import com.aslanjavasky.shawarmadelviry.domain.repo.OrderRepo
 import org.springframework.stereotype.Repository
+import java.util.concurrent.atomic.AtomicLong
 
 @Repository
 class OrderRepoImpl : OrderRepo {
 
     private val orders = mutableListOf<Order>()
+    private var nextId = AtomicLong(1)
 
     override fun saveOrder(order: Order): Order {
+        order.id = nextId.getAndIncrement()
         orders.add(order)
         return order
     }
@@ -28,5 +31,13 @@ class OrderRepoImpl : OrderRepo {
 
     override fun getOrderByStatus(orderStatus: OrderStatus): List<Order> {
         return orders.filter { it.status!!.name == orderStatus.name }
+    }
+
+    override fun updateOrderStatus(id: Long, status: OrderStatus): Order {
+        val order=orders.find { it.id == id }
+        order?.let {
+            it.status=status
+        }
+        return order!!
     }
 }

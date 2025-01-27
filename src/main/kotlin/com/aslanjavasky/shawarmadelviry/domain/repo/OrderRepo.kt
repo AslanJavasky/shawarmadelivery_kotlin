@@ -5,8 +5,9 @@ import com.aslanjavasky.shawarmadelviry.domain.model.OrderStatus
 import com.aslanjavasky.shawarmadelviry.domain.model.User
 
 interface OrderRepo {
-    fun saveOrder(order:Order):Order
-    fun updateOrder(order: Order):Order
-    fun getOrdersByUser(user: User):List<Order>
-    fun getOrderByStatus(orderStatus: OrderStatus):List<Order>
+    fun saveOrder(order: Order): Order
+    fun updateOrder(order: Order): Order
+    fun getOrdersByUser(user: User): List<Order>
+    fun getOrderByStatus(orderStatus: OrderStatus): List<Order>
+    fun updateOrderStatus(id: Long, status: OrderStatus): Order
 }

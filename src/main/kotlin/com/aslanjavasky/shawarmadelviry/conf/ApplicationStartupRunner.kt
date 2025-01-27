@@ -81,5 +81,11 @@ class ApplicationStartupRunner(
         menuItemRepo.saveMenuItem(
             MenuItem(22L, "Кисло-Сладкий", MenuSection.SAUCE, BigDecimal.valueOf(40))
         )
+        menuItemRepo.saveMenuItem(
+            MenuItem(23L, "Шаурма L", MenuSection.MAIN_MENU, BigDecimal.valueOf(240))
+        )
+        menuItemRepo.saveMenuItem(
+            MenuItem(24L, "Шаурма XL", MenuSection.MAIN_MENU, BigDecimal.valueOf(290))
+        )
     }
 }

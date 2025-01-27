@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+</head>
+<body>
+<h1>New Orders</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Date & Time</th>
+        <th>Customer name</th>
+        <th>Custom address</th>
+        <th>Custom Phone</th>
+        <th>Custom Telegram</th>
+        <th>Menu items</th>
+        <th>Total price</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="order : ${newOrders}">
+        <td th:text="${order.dateTime}"></td>
+        <td th:text="${order.user.name}"></td>
+        <td th:text="${order.user.address}"></td>
+        <td th:text="${order.user.phone}"></td>
+        <td th:text="${order.user.telegram}"></td>
+        <td>
+            <ul>
+                <li th:each="item : ${order.itemList}" th:text="${item.name}"></li>
+            </ul>
+        </td>
+        <td th:text="${order.totalPrice}"></td>
+        <td th:text="${order.status}"></td>
+        <td>
+            <form th:action="@{/admin/orders/update/{id}(id=${order.id})}" th:method="post">
+                <select name="status">
+                    <option th:each="status : ${T(com.aslanjavasky.shawarmadelviry.domain.model.OrderStatus).values()}"
+                        th:text="${status}"
+                            th:value="${status}"
+                    ></option>
+                </select>
+                <button type="submit">Update status</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<hr>
+<form th:action="@{/admin/orders/filter}" th:method="get">
+    <label for="statusFilter">Filter By Status:</label>
+    <select id="statusFilter" name="status">
+        <option th:each="status: ${T(com.aslanjavasky.shawarmadelviry.domain.model.OrderStatus).values()}"
+                th:value="${status}" th:text="${status}"></option>
+    </select>
+    <button type="submit">Apply filter</button>
+</form>
+<table>
+    <thead>
+    <tr>
+        <th>Date & Time</th>
+        <th>Customer name</th>
+        <th>Custom address</th>
+        <th>Custom Phone</th>
+        <th>Custom Telegram</th>
+        <th>Menu items</th>
+        <th>Total price</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="order : ${filteredOrders}">
+        <td th:text="${order.dateTime}"></td>
+        <td th:text="${order.user.name}"></td>
+        <td th:text="${order.user.address}"></td>
+        <td th:text="${order.user.phone}"></td>
+        <td th:text="${order.user.telegram}"></td>
+        <td>
+            <ul>
+                <li th:each="item : ${order.itemList}" th:text="${item.name}"></li>
+            </ul>
+        </td>
+        <td th:text="${order.totalPrice}"></td>
+        <td th:text="${order.status}"></td>
+        <td>
+            <form th:action="@{/admin/orders/update/{id}(id=${order.id})}" th:method="post">
+                <select name="status">
+                    <option th:each="status : ${T(com.aslanjavasky.shawarmadelviry.domain.model.OrderStatus).values()}"
+                            th:text="${status}"
+                            th:value="${status}"
+                    ></option>
+                </select>
+                <button type="submit">Update status</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+
+</body>
+</html>
