@@ -1,11 +1,11 @@
 package com.aslanjavasky.shawarmadelviry.domain.model
 
 data class User(
-    var id: Long?=null,
-    var name: String?=null,
-    var email: String?=null,
-    var password: String?=null,
-    var phone: String?=null,
-    var telegram: String?=null,
-    var address: String?=null
-)
+    override var id: Long? = null,
+    override var name: String? = null,
+    override var email: String? = null,
+    override var password: String? = null,
+    override var phone: String? = null,
+    override var telegram: String? = null,
+    override var address: String? = null
+) : IUser

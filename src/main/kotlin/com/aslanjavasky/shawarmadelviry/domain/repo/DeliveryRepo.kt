@@ -1,9 +1,10 @@
 package com.aslanjavasky.shawarmadelviry.domain.repo
 
 import com.aslanjavasky.shawarmadelviry.domain.model.Delivery
+import com.aslanjavasky.shawarmadelviry.domain.model.IDelivery
 
 interface DeliveryRepo {
-    fun saveDelivery(delivery: Delivery): Delivery
-    fun updateDelivery(delivery: Delivery): Delivery
-    fun getDeliveryById(id: Long): Delivery?
+    fun saveDelivery(delivery: IDelivery): IDelivery
+    fun updateDelivery(delivery: IDelivery): IDelivery
+    fun getDeliveryById(id: Long): IDelivery?
 }

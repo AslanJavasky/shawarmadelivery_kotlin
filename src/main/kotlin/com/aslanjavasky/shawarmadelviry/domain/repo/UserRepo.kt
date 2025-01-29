@@ -1,10 +1,11 @@
 package com.aslanjavasky.shawarmadelviry.domain.repo
 
+import com.aslanjavasky.shawarmadelviry.domain.model.IUser
 import com.aslanjavasky.shawarmadelviry.domain.model.User
 
 interface UserRepo {
-    fun saveUser(user: User): User
-    fun deleteUser(user: User)
-    fun updateUser(user: User): User
-    fun getUserByEmail(email: String): User?
+    fun saveUser(user: IUser): IUser
+    fun deleteUser(user: IUser)
+    fun updateUser(user: IUser): IUser
+    fun getUserByEmail(email: String): IUser?
 }

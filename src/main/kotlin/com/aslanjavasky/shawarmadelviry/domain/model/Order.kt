@@ -4,10 +4,10 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class Order(
-    var id: Long?=null,
-    var dateTime: LocalDateTime?=null,
-    var status: OrderStatus?=null,
-    var user: User?=null,
-    var itemList: List<MenuItem?>?=null,
-    var totalPrice: BigDecimal?=null
-)
+    override var id: Long? = null,
+    override var dateTime: LocalDateTime? = null,
+    override var status: OrderStatus? = null,
+    override var user: IUser? = null,
+    override var itemList: List<IMenuItem?>? = null,
+    override var totalPrice: BigDecimal? = null
+) : IOrder

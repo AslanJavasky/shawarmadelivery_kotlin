@@ -1,5 +1,7 @@
 package com.aslanjavasky.shawarmadelviry.presentation.service
 
+import com.aslanjavasky.shawarmadelviry.domain.model.IMenuItem
+import com.aslanjavasky.shawarmadelviry.domain.model.IUser
 import com.aslanjavasky.shawarmadelviry.domain.model.MenuItem
 import com.aslanjavasky.shawarmadelviry.domain.model.User
 import org.springframework.stereotype.Service
@@ -13,9 +15,9 @@ data class SessionInfoService(
     var phone: String? = "",
     var address: String? = "",
     var email: String? = "",
-    var cart: List<MenuItem?> = emptyList()
+    var cart: List<IMenuItem?> = emptyList()
 ) {
-    fun setUserInfo(user: User) {
+    fun setUserInfo(user: IUser) {
         username = user.name
         phone = user.phone
         address = user.address
