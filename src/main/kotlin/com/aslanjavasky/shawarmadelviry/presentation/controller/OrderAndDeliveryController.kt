@@ -21,8 +21,18 @@ class OrderAndDeliveryController(
     private val deliveryService: DeliveryService,
     private val sessionInfoService: SessionInfoService
 ) {
+
+    @GetMapping("/order")
+    fun showOrderForm(model: Model): String {
+        if (sessionInfoService.cart == null || sessionInfoService.cart.isEmpty()) {
+            return "redirect:/menu"
+        }
+        model.addAttribute("sessionInfoService", sessionInfoService)
+        return "order"
+    }
+
     @PostMapping("/order")
-    fun showOrderForm(
+    fun processOrderForm(
         @RequestParam selectedId: List<Long>,
         @RequestParam quantities: List<Int>,
         model: Model
@@ -32,18 +42,18 @@ class OrderAndDeliveryController(
                 menuItemService.getMenuItemById(id)
             }
         }
-        sessionInfoService.cart=selectedMenuItems
-        model.addAttribute("sessionInfoService",sessionInfoService)
+        sessionInfoService.cart = selectedMenuItems
+        model.addAttribute("sessionInfoService", sessionInfoService)
         return "order"
     }
 
     @PostMapping("/order/submit")
     fun orderSubmit(): String {
 
-        val user= userService.getUserByEmail(sessionInfoService.email!!)?.apply {
-            name=sessionInfoService.username
-            address=sessionInfoService.address
-            phone=sessionInfoService.phone
+        val user = userService.getUserByEmail(sessionInfoService.email!!)?.apply {
+            name = sessionInfoService.username
+            address = sessionInfoService.address
+            phone = sessionInfoService.phone
         }
 
         val order = Order(
@@ -51,12 +61,12 @@ class OrderAndDeliveryController(
             itemList = sessionInfoService.cart,
             totalPrice = sessionInfoService.getTotalPrice(),
             dateTime = LocalDateTime.now(),
-            user=user
+            user = user
         )
-        val delivery=Delivery(
+        val delivery = Delivery(
             dateTime = LocalDateTime.now(),
             address = sessionInfoService.address,
-            phone= sessionInfoService.phone,
+            phone = sessionInfoService.phone,
             order = order
         )
 

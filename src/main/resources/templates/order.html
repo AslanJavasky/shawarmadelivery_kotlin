@@ -2,16 +2,19 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Order</title>
+    <title th:text="#{order.title}">Order</title>
 </head>
 <body>
-<h1>Order Confirmation</h1>
-<h2>Your order:</h2>
+<div>
+    <a href="?lang=en">EN</a> | <a href="?lang=ru">RU</a>
+</div>
+<h1 th:text="#{order.title}">Order Confirmation</h1>
+<h2 th:text="#{order.your_order}">Your order:</h2>
 <table>
     <thead>
     <tr>
-        <th>Name</th>
-        <th>Price</th>
+        <th th:text="#{order.dishname}">Name</th>
+        <th th:text="#{order.price}">Price</th>
     </tr>
     </thead>
     <tbody>
@@ -21,25 +24,27 @@
     </tr>
     </tbody>
 </table>
+<br/>
 <div class="total">
-    Total: <span th:text="${sessionInfoService.getTotalPrice()} + ' руб.'"/>
+    <span th:text="#{order.total}">Total:</span>
+    <span th:text="${sessionInfoService.getTotalPrice()} + ' руб.'"/>
 </div>
 
-<h2>Please, enter date for delivery:</h2>
+<h2 th:text="#{order.enter_delivery_data}">Please, enter data for delivery:</h2>
 <form th:action="@{/order/submit}" th:method="post" th:object="${sessionInfoService}">
     <div>
-        <label for="username">Username:</label>
+        <label for="username" th:text="#{order.username}">Username:</label>
         <input type="text" id="username" name="username" th:field="*{username}"/>
     </div>
     <div>
-        <label for="address">Address:</label>
+        <label for="address" th:text="#{order.address}">Address:</label>
         <input type="text" id="address" name="address" th:field="*{address}">
     </div>
     <div>
-        <label for="phone">Tel:</label>
+        <label for="phone" th:text="#{order.phone}">Tel:</label>
         <input type="text" id="phone" name="phone" th:field="*{phone}">
     </div>
-    <button type="submit">Submit</button>
+    <button type="submit" th:text="#{order.submit}">Submit</button>
 </form>
 
 </body>

@@ -16,10 +16,10 @@ class MenuItemController(
     @GetMapping
     fun showMenu(model: Model): String {
         val menuItemsBySection = mapOf(
-            MenuSection.MAIN_MENU to service.getMenuItemsBySection(MenuSection.MAIN_MENU),
-            MenuSection.ZAKUSKI to service.getMenuItemsBySection(MenuSection.ZAKUSKI),
-            MenuSection.DOBAVKI to service.getMenuItemsBySection(MenuSection.DOBAVKI),
-            MenuSection.SAUCE to service.getMenuItemsBySection(MenuSection.SAUCE)
+            "menu.main_menu" to service.getMenuItemsBySection(MenuSection.MAIN_MENU),
+            "menu.zakuski" to service.getMenuItemsBySection(MenuSection.ZAKUSKI),
+            "menu.dobavki" to service.getMenuItemsBySection(MenuSection.DOBAVKI),
+            "menu.sauce" to service.getMenuItemsBySection(MenuSection.SAUCE)
         )
         model.addAttribute("menuItemsBySection", menuItemsBySection)
         return "menu"

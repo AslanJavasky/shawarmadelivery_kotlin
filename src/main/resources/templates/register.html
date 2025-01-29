@@ -2,37 +2,44 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Register User</title>
+    <title th:text="#{register.title}">Register User</title>
 </head>
 <body>
-<h1>Register</h1>
+<div>
+    <a href="?lang=en">EN</a> | <a href="?lang=ru">RU</a>
+</div>
+
+<h1 th:text="#{register.title}">Register</h1>
 <form th:action="@{/users/register}" th:object="${user}" th:method="post">
     <div>
-        <label for="name">Name:</label>
+        <label for="name" th:text="#{register.name}">Name:</label>
         <input type="text" id="name" th:field="*{name}" required>
     </div> <br>
     <div>
-        <label for="email">Email:</label>
+        <label for="email" th:text="#{register.email}">Email:</label>
         <input type="email" id="email" th:field="*{email}" required>
     </div><br>
     <div>
-        <label for="password">Password:</label>
+        <label for="password" th:text="#{register.password}">Password:</label>
         <input type="password" id="password" th:field="*{password}" required>
     </div><br>
     <div>
-        <label for="telegram">Telegram:</label>
+        <label for="telegram" th:text="#{register.telegram}">Telegram:</label>
         <input type="text" id="telegram" th:field="*{telegram}">
     </div><br>
     <div>
-        <label for="address">Address:</label>
+        <label for="phone" th:text="#{register.phone}">Phone number:</label>
+        <input type="text" id="phone" th:field="*{phone}">
+    </div><br>
+    <div>
+        <label for="address" th:text="#{register.address}">Address:</label>
         <input type="text" id="address" th:field="*{address}">
     </div><br>
-    <button type="submit">Register</button>
+    <button type="submit" th:text="#{register.submit}">Register</button>
 </form>
-<p>Already registered?</p>
+<p th:text="#{register.already_registered}">Already registered?</p>
 <a th:href="@{/users/login}">
-    <button type="button">LogIn</button>
+    <button type="button" th:text="#{register.login}">LogIn</button>
 </a>
-
 </body>
 </html>
