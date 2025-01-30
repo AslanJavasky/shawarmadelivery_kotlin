@@ -10,7 +10,7 @@
 </div>
 <h1 th:text="#{menu.title}"> Menu </h1>
 
-<form th:action="@{/order}" th:method="post">
+<form th:action="@{/menu/order}" th:method="post">
     <div th:each="section: ${menuItemsBySection}">
 
         <h2 th:text="#{${section.key}}"> Section:</h2>
@@ -30,7 +30,7 @@
     <button type="submit" th:text="#{menu.submit}">Place order</button>
 </form>
 
-<div th:if="${error}" th:text="${error}"></div>
+<div th:if="${error}" th:text="${error}" style="color:red"></div>
 
 
 <script>

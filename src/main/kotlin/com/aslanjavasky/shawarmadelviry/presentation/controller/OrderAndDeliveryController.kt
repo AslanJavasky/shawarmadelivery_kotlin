@@ -5,8 +5,12 @@ import com.aslanjavasky.shawarmadelviry.domain.model.Order
 import com.aslanjavasky.shawarmadelviry.domain.model.OrderStatus
 import com.aslanjavasky.shawarmadelviry.domain.model.User
 import com.aslanjavasky.shawarmadelviry.presentation.service.*
+import com.aslanjavasky.shawarmadelviry.presentation.service.dto.OrderDto
+import com.aslanjavasky.shawarmadelviry.presentation.service.dto.UserDto
+import jakarta.validation.Valid
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
+import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PostMapping
@@ -15,7 +19,6 @@ import java.time.LocalDateTime
 
 @Controller
 class OrderAndDeliveryController(
-    private val menuItemService: MenuItemService,
     private val userService: UserService,
     private val orderService: OrderService,
     private val deliveryService: DeliveryService,
@@ -24,31 +27,32 @@ class OrderAndDeliveryController(
 
     @GetMapping("/order")
     fun showOrderForm(model: Model): String {
-        if (sessionInfoService.cart == null || sessionInfoService.cart.isEmpty()) {
-            return "redirect:/menu"
-        }
+        model.addAttribute(
+            "orderDto", OrderDto(
+                username = sessionInfoService.username,
+                address = sessionInfoService.address,
+                phone = sessionInfoService.phone
+            )
+        )
         model.addAttribute("sessionInfoService", sessionInfoService)
         return "order"
     }
 
-    @PostMapping("/order")
-    fun processOrderForm(
-        @RequestParam selectedId: List<Long>,
-        @RequestParam quantities: List<Int>,
-        model: Model
-    ): String {
-        val selectedMenuItems = selectedId.flatMapIndexed { index, id ->
-            List(quantities[index]) {
-                menuItemService.getMenuItemById(id)
-            }
-        }
-        sessionInfoService.cart = selectedMenuItems
-        model.addAttribute("sessionInfoService", sessionInfoService)
-        return "order"
-    }
 
     @PostMapping("/order/submit")
-    fun orderSubmit(): String {
+    fun orderSubmit(
+        @Valid @ModelAttribute("orderDto") orderDto: OrderDto,
+        result: BindingResult,
+        model: Model
+    ): String {
+
+        if (result.hasErrors()) {
+            model.addAttribute("sessionInfoService", sessionInfoService)
+            model.addAttribute("orderDto", orderDto)
+            return "order"
+        }
+
+        sessionInfoService.setInfoFromOrderDto(orderDto)
 
         val user = userService.getUserByEmail(sessionInfoService.email!!)?.apply {
             name = sessionInfoService.username

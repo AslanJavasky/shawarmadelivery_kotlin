@@ -1,5 +1,6 @@
 package com.aslanjavasky.shawarmadelviry.domain.model
 
+
 data class User(
     override var id: Long? = null,
     override var name: String? = null,
