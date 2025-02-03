@@ -27,7 +27,7 @@ class OrderRepoImpl : OrderRepo {
         return orders.filter { it.user!!.id == user.id }
     }
 
-    override fun getOrderByStatus(orderStatus: OrderStatus): List<IOrder> {
+    override fun getOrdersByStatus(orderStatus: OrderStatus): List<IOrder> {
         return orders.filter { it.status!!.name == orderStatus.name }
     }
 

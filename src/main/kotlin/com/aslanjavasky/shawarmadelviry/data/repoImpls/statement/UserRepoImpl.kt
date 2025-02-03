@@ -7,78 +7,106 @@ import org.springframework.stereotype.Repository
 import java.sql.SQLException
 import javax.sql.DataSource
 
-@Repository("URwS")
+@Repository("URwPS")
 class UserRepoImpl(
     private val dataSource: DataSource
 ) : UserRepo {
     override fun saveUser(user: IUser): IUser {
-        return try {
-            dataSource.connection.use { connection ->
-                connection.createStatement().use { statement ->
-                    val sql = ("INSERT INTO users(name, email,password,telegram,phone,address) VALUES(" +
-                            "'" + user.name + "','" + user.email + "','" + user.password + "','" +
-                            user.telegram + "','" + user.phone + "','" + user.address + "'" +
-                            ");")
-                    statement.executeUpdate(sql)
-                }
+        val sql = "INSERT INTO users(name, email, password, telegram, phone, address) VALUES(?,?,?,?,?,?)"
+        return dataSource.connection.use { connection ->
+            connection.prepareStatement(sql).use { ps ->
+                ps.setString(1, user.name)
+                ps.setString(2, user.email)
+                ps.setString(3, user.password)
+                ps.setString(4, user.telegram)
+                ps.setString(5, user.phone)
+                ps.setString(6, user.address)
+                ps.executeUpdate()
+                user
             }
-            user
-        } catch (e: SQLException) {
-            User()
         }
     }
 
     override fun deleteUser(user: IUser) {
-        try {
-            dataSource.connection.use { connection ->
-                connection.createStatement().use { statement ->
-
-                    val sql="DELETE FROM users WHERE id=${user.id}"
-                    statement.executeUpdate(sql)
+        val sql = "DELETE FROM users WHERE id=?"
+        dataSource.connection.use { connection ->
+            connection.prepareStatement(sql).use { ps ->
+                user.id?.let {
+                    ps.setLong(1, it)
+                    ps.executeUpdate(sql)
                 }
             }
-        }catch (e:SQLException){
-            e.printStackTrace()
+        }
+    }
+
+    override fun deleteUserByEmail(email: String) {
+        val sql = "DELETE FROM users WHERE email = ? "
+        dataSource.connection.use { connection ->
+            connection.prepareStatement(sql).use { ps ->
+                ps.setString(1, email)
+                ps.executeUpdate()
+            }
         }
     }
 
     override fun updateUser(user: IUser): IUser {
-        return try {
-            dataSource.connection.use { connection ->
-                connection.createStatement().use { statement ->
-                    val sql=
-                        "UPDATE users SET name='${user.name}', email='${user.email}',password='${user.password}'" +
-                            "telegram='${user.telegram}',phone='${user.phone}',address='${user.address}'" +
-                                "WHERE id=${user.id};"
-                    statement.executeUpdate(sql)
-                    user
-                }
+        val sql = "UPDATE users SET name=?, email=?, password=?, telegram=?, phone=?, address=? WHERE id=?"
+        return dataSource.connection.use { connection ->
+            connection.prepareStatement(sql).use { ps ->
+                ps.setString(1, user.name)
+                ps.setString(2, user.email)
+                ps.setString(3, user.password)
+                ps.setString(4, user.telegram)
+                ps.setString(5, user.phone)
+                ps.setString(6, user.address)
+                ps.setLong(7, user.id!!)
+                ps.executeUpdate()
+                user
             }
-        }catch (e:SQLException){
-            User()
         }
     }
 
+
     override fun getUserByEmail(email: String): IUser? {
-        return try {
-            dataSource.connection.use { connection ->
-                connection.createStatement().use { statement ->
-                    val sql= "SELECT * FROM users WHERE email='$email';"
-                    val rs=statement.executeQuery(sql)
-                    val user=User()
-                    while (rs.next()){
-                        user.id=rs.getLong("id")
-                        user.name=rs.getString("name")
-                        user.email=rs.getString("email")
-                        user.password=rs.getString("password")
-                        user.phone=rs.getString("phone")
-                        user.address=rs.getString("address")
+        val sql = "SELECT * FROM users WHERE email=?"
+        return dataSource.connection.use { connection ->
+            connection.prepareStatement(sql).use { ps ->
+                ps.setString(1, email)
+                val user = User()
+                ps.executeQuery().use { rs ->
+                    while (rs.next()) {
+                        user.id = rs.getLong("id")
+                        user.name = rs.getString("name")
+                        user.email = rs.getString("email")
+                        user.password = rs.getString("password")
+                        user.phone = rs.getString("phone")
+                        user.address = rs.getString("address")
                     }
                     user
                 }
             }
-        }catch (e:SQLException) {
-            null
+        }
+    }
+
+    fun getUserById(userId: Long): IUser {
+        val sql = "SELECT * users WHERE id=?"
+        return dataSource.connection.use { connection ->
+            connection.prepareStatement(sql).use { ps ->
+                ps.setLong(1, userId)
+                val user = User()
+                ps.executeQuery().use { rs ->
+                    while (rs.next()){
+                        user.id = rs.getLong("id")
+                        user.name = rs.getString("name")
+                        user.email = rs.getString("email")
+                        user.password = rs.getString("password")
+                        user.telegram = rs.getString("telegram")
+                        user.phone = rs.getString("phone")
+                        user.address = rs.getString("address")
+                    }
+                }
+                user
+            }
         }
     }
 }

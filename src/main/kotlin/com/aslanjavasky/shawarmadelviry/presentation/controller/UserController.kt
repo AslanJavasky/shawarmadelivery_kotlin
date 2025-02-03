@@ -80,10 +80,7 @@ class UserController(
 
     @PostMapping("/delete")
     fun deleteUser(@RequestParam email: String): String {
-        val user = userService.getUserByEmail(email)
-        user?.let {
-            userService.deleteUser(user)
-        }
+        userService.deleteUserByEmail(email)
         return "redirect:/users/register"
     }
 

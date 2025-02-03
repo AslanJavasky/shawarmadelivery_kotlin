@@ -27,6 +27,10 @@ class UserRepoImpl : UserRepo {
         users.remove(user)
     }
 
+    override fun deleteUserByEmail(email: String) {
+        TODO("Not yet implemented")
+    }
+
     override fun updateUser(user: IUser): IUser {
         val index = users.indexOfFirst { it.id == user.id }
         if (index != -1) {

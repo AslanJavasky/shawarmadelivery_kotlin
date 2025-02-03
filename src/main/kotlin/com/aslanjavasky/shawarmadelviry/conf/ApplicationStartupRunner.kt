@@ -3,13 +3,14 @@ package com.aslanjavasky.shawarmadelviry.conf
 import com.aslanjavasky.shawarmadelviry.domain.model.MenuItem
 import com.aslanjavasky.shawarmadelviry.domain.model.MenuSection
 import com.aslanjavasky.shawarmadelviry.domain.repo.MenuItemRepo
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
 
 @Component
 class ApplicationStartupRunner(
-    private val menuItemRepo: MenuItemRepo
+    @Qualifier("MRwPS") private val menuItemRepo: MenuItemRepo
 ) : CommandLineRunner {
 
     override fun run(vararg args: String?) {
