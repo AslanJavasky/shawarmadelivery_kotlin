@@ -5,6 +5,7 @@ import com.aslanjavasky.shawarmadelviry.domain.model.User
 import com.aslanjavasky.shawarmadelviry.domain.repo.UserRepo
 import org.springframework.stereotype.Repository
 import java.sql.SQLException
+import java.sql.Statement
 import javax.sql.DataSource
 
 @Repository("URwPS")
@@ -12,16 +13,24 @@ class UserRepoImpl(
     private val dataSource: DataSource
 ) : UserRepo {
     override fun saveUser(user: IUser): IUser {
+
         val sql = "INSERT INTO users(name, email, password, telegram, phone, address) VALUES(?,?,?,?,?,?)"
         return dataSource.connection.use { connection ->
-            connection.prepareStatement(sql).use { ps ->
+            connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { ps ->
                 ps.setString(1, user.name)
                 ps.setString(2, user.email)
                 ps.setString(3, user.password)
                 ps.setString(4, user.telegram)
                 ps.setString(5, user.phone)
                 ps.setString(6, user.address)
-                ps.executeUpdate()
+                val affectedRow = ps.executeUpdate()
+                if (affectedRow == 0) throw SQLException("Failed to save user, no rows affected")
+
+                ps.generatedKeys.use { rs ->
+                    while (rs.next()) {
+                        user.id = rs.getLong("id")
+                    }
+                }
                 user
             }
         }
@@ -33,7 +42,8 @@ class UserRepoImpl(
             connection.prepareStatement(sql).use { ps ->
                 user.id?.let {
                     ps.setLong(1, it)
-                    ps.executeUpdate(sql)
+                    val affectedRow = ps.executeUpdate()
+                    if (affectedRow == 0) throw SQLException("Failed to delete user, no rows affected")
                 }
             }
         }
@@ -44,7 +54,8 @@ class UserRepoImpl(
         dataSource.connection.use { connection ->
             connection.prepareStatement(sql).use { ps ->
                 ps.setString(1, email)
-                ps.executeUpdate()
+                val affectedRow = ps.executeUpdate()
+                if (affectedRow == 0) throw SQLException("Failed to delete user, no rows affected")
             }
         }
     }
@@ -60,7 +71,10 @@ class UserRepoImpl(
                 ps.setString(5, user.phone)
                 ps.setString(6, user.address)
                 ps.setLong(7, user.id!!)
-                ps.executeUpdate()
+
+                val affectedRow = ps.executeUpdate()
+                if (affectedRow == 0) throw SQLException("Failed to update user, no rows affected")
+
                 user
             }
         }
@@ -95,7 +109,7 @@ class UserRepoImpl(
                 ps.setLong(1, userId)
                 val user = User()
                 ps.executeQuery().use { rs ->
-                    while (rs.next()){
+                    while (rs.next()) {
                         user.id = rs.getLong("id")
                         user.name = rs.getString("name")
                         user.email = rs.getString("email")

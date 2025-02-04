@@ -5,6 +5,8 @@ import com.aslanjavasky.shawarmadelviry.domain.model.MenuItem
 import com.aslanjavasky.shawarmadelviry.domain.model.MenuSection
 import com.aslanjavasky.shawarmadelviry.domain.repo.MenuItemRepo
 import org.springframework.stereotype.Repository
+import java.sql.SQLException
+import java.sql.Statement
 import javax.sql.DataSource
 
 @Repository("MRwPS")
@@ -14,11 +16,20 @@ class MenuItemRepoImpl(
     override fun saveMenuItem(menuItem: IMenuItem): IMenuItem {
         val sql = "INSERT INTO menu_items (name, menu_section, price) VALUES(?,?,?)"
         datasource.connection.use { connection ->
-            connection.prepareStatement(sql).use { ps ->
+            connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { ps ->
                 ps.setString(1, menuItem.name)
                 ps.setString(2, menuItem.menuSection.name)
                 ps.setBigDecimal(3, menuItem.price)
-                ps.executeUpdate()
+
+                val affectedRow = ps.executeUpdate()
+                if (affectedRow == 0) throw SQLException("Failed to save menu item, no rows affected")
+
+                ps.generatedKeys.use { rs ->
+                    while (rs.next()) {
+                        menuItem.id = rs.getLong("id")
+                    }
+                }
+
             }
         }
         return menuItem
@@ -32,7 +43,8 @@ class MenuItemRepoImpl(
                 ps.setString(2, menuItem.menuSection.name)
                 ps.setBigDecimal(3, menuItem.price)
                 ps.setLong(4, menuItem.id)
-                ps.executeUpdate()
+                val affectedRow = ps.executeUpdate()
+                if (affectedRow == 0) throw SQLException("Failed to update menu item, no rows affected")
             }
         }
         return menuItem
@@ -83,7 +95,9 @@ class MenuItemRepoImpl(
         datasource.connection.use { connection ->
             connection.prepareStatement(sql).use { ps ->
                 ps.setLong(1, menuItem.id)
-                ps.executeUpdate()
+
+                val affectedRow = ps.executeUpdate()
+                if (affectedRow == 0) throw SQLException("Failed to delete menu item, no rows affected")
             }
         }
     }
