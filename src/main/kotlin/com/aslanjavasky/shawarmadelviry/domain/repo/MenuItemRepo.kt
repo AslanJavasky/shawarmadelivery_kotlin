@@ -10,4 +10,5 @@ interface MenuItemRepo {
     fun getMenuItemById(id: Long): IMenuItem?
     fun getMenuItemsBySection(section: MenuSection): List<IMenuItem>
     fun deleteMenuItem(menuItem: IMenuItem)
+    fun deleteAll()
 }

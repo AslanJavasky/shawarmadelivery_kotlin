@@ -14,6 +14,9 @@ class ApplicationStartupRunner(
 ) : CommandLineRunner {
 
     override fun run(vararg args: String?) {
+
+        menuItemRepo.deleteAll()
+
         menuItemRepo.saveMenuItem(
             MenuItem(1L, "Гиро в лаваше L", MenuSection.MAIN_MENU, BigDecimal.valueOf(240))
         )

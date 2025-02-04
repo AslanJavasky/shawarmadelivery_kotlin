@@ -101,4 +101,13 @@ class MenuItemRepoImpl(
             }
         }
     }
+
+    override fun deleteAll() {
+        val sql = "DELETE FROM menu_items"
+        datasource.connection.use { connection ->
+            connection.prepareStatement(sql).use { ps ->
+                ps.executeUpdate()
+            }
+        }
+    }
 }

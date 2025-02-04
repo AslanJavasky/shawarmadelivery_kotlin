@@ -36,4 +36,8 @@ class MenuItemRepoImpl : MenuItemRepo {
     override fun deleteMenuItem(menuItem: IMenuItem) {
         items.remove(menuItem)
     }
+
+    override fun deleteAll() {
+        TODO("Not yet implemented")
+    }
 }
