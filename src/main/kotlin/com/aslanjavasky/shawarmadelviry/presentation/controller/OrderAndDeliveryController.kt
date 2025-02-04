@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import java.time.LocalDateTime
+import java.util.logging.Logger
 
 @Controller
 class OrderAndDeliveryController(
@@ -74,9 +75,11 @@ class OrderAndDeliveryController(
             order = order
         )
 
-        userService.createUser(order.user!!)
+        userService.updateUser(order.user!!)
         orderService.createOrder(delivery.order!!)
         deliveryService.createDelivery(delivery)
+
+
         return "redirect:/menu"
     }
 }

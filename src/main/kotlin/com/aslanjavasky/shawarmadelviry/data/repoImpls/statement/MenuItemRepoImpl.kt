@@ -14,12 +14,15 @@ class MenuItemRepoImpl(
     private val datasource: DataSource
 ) : MenuItemRepo {
     override fun saveMenuItem(menuItem: IMenuItem): IMenuItem {
-        val sql = "INSERT INTO menu_items (name, menu_section, price) VALUES(?,?,?)"
+        val sql = ("INSERT INTO menu_items (id, name, menu_section, price) VALUES(?,?,?,?) " +
+                "ON CONFLICT (id) DO " +
+                "UPDATE SET name=EXCLUDED.name,menu_section=EXCLUDED.menu_section,price=EXCLUDED.price")
         datasource.connection.use { connection ->
             connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { ps ->
-                ps.setString(1, menuItem.name)
-                ps.setString(2, menuItem.menuSection.name)
-                ps.setBigDecimal(3, menuItem.price)
+                ps.setLong(1, menuItem.id)
+                ps.setString(2, menuItem.name)
+                ps.setString(3, menuItem.menuSection.name)
+                ps.setBigDecimal(4, menuItem.price)
 
                 val affectedRow = ps.executeUpdate()
                 if (affectedRow == 0) throw SQLException("Failed to save menu item, no rows affected")

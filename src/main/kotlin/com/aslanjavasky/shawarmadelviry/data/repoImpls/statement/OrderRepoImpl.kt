@@ -23,9 +23,9 @@ class OrderRepoImpl(
         dataSource.connection.use { connection ->
             connection.prepareStatement(sqlOrder, Statement.RETURN_GENERATED_KEYS).use { ps ->
                 ps.setTimestamp(1, Timestamp.valueOf(order.dateTime))
-                ps.setString(1, order.status!!.name)
-                ps.setLong(1, order.user!!.id!!)
-                ps.setBigDecimal(1, order.totalPrice)
+                ps.setString(2, order.status!!.name)
+                ps.setLong(3, order.user!!.id!!)
+                ps.setBigDecimal(4, order.totalPrice)
 
                 val affectedRow = ps.executeUpdate()
                 if (affectedRow == 0) throw SQLException("Failed to save order, no rows affected")
@@ -119,7 +119,7 @@ class OrderRepoImpl(
     }
 
     fun getOrderById(orderId: Long): IOrder {
-        val sql = "SELECT * FROM orders WHERE order_id=?"
+        val sql = "SELECT * FROM orders WHERE id=?"
         val sqlFromOrdersMenuItems = "SELECT * FROM orders_menu_items WHERE order_id=?"
         dataSource.connection.use { connection ->
             val order = Order()
@@ -127,11 +127,13 @@ class OrderRepoImpl(
                 ps.setLong(1, orderId)
 
                 ps.executeQuery().use { rs ->
-                    order.id = rs.getLong("id")
-                    order.dateTime = rs.getTimestamp("date_time").toLocalDateTime()
-                    order.status = OrderStatus.valueOf(rs.getString("status"))
-                    order.user = userRepoImpl.getUserById(rs.getLong("user_id"))
-                    order.totalPrice = rs.getBigDecimal("total_price")
+                    while (rs.next()){
+                        order.id = rs.getLong("id")
+                        order.dateTime = rs.getTimestamp("date_time").toLocalDateTime()
+                        order.status = OrderStatus.valueOf(rs.getString("status"))
+                        order.user = userRepoImpl.getUserById(rs.getLong("user_id"))
+                        order.totalPrice = rs.getBigDecimal("total_price")
+                    }
                 }
             }
             connection.prepareStatement(sqlFromOrdersMenuItems).use { ps ->

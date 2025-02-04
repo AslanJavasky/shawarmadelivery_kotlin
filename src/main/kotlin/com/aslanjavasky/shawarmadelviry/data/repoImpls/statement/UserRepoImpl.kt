@@ -6,6 +6,7 @@ import com.aslanjavasky.shawarmadelviry.domain.repo.UserRepo
 import org.springframework.stereotype.Repository
 import java.sql.SQLException
 import java.sql.Statement
+import java.util.logging.Logger
 import javax.sql.DataSource
 
 @Repository("URwPS")
@@ -23,6 +24,7 @@ class UserRepoImpl(
                 ps.setString(4, user.telegram)
                 ps.setString(5, user.phone)
                 ps.setString(6, user.address)
+
                 val affectedRow = ps.executeUpdate()
                 if (affectedRow == 0) throw SQLException("Failed to save user, no rows affected")
 
@@ -61,6 +63,7 @@ class UserRepoImpl(
     }
 
     override fun updateUser(user: IUser): IUser {
+
         val sql = "UPDATE users SET name=?, email=?, password=?, telegram=?, phone=?, address=? WHERE id=?"
         return dataSource.connection.use { connection ->
             connection.prepareStatement(sql).use { ps ->
@@ -95,6 +98,7 @@ class UserRepoImpl(
                         user.password = rs.getString("password")
                         user.phone = rs.getString("phone")
                         user.address = rs.getString("address")
+                        user.telegram = rs.getString("telegram")
                     }
                     user
                 }
@@ -103,7 +107,7 @@ class UserRepoImpl(
     }
 
     fun getUserById(userId: Long): IUser {
-        val sql = "SELECT * users WHERE id=?"
+        val sql = "SELECT * FROM users WHERE id=?"
         return dataSource.connection.use { connection ->
             connection.prepareStatement(sql).use { ps ->
                 ps.setLong(1, userId)

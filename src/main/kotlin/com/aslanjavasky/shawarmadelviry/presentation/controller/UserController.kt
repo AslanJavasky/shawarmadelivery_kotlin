@@ -1,7 +1,6 @@
 package com.aslanjavasky.shawarmadelviry.presentation.controller
 
 import com.aslanjavasky.shawarmadelviry.conf.AuthUtils
-import com.aslanjavasky.shawarmadelviry.domain.model.User
 import com.aslanjavasky.shawarmadelviry.presentation.service.SessionInfoService
 import com.aslanjavasky.shawarmadelviry.presentation.service.UserService
 import com.aslanjavasky.shawarmadelviry.presentation.service.dto.LoginCredential
@@ -67,6 +66,16 @@ class UserController(
         return try {
             val user = userService.getUserByEmail(credential.email!!)
             if (authUtils.authenticate(credential.password!!, user!!.password!!)) {
+                if (sessionInfoService.username.isNullOrBlank()){
+                    val userDto = UserDto()
+                    userDto.name = user.name
+                    userDto.phone = user.phone
+                    userDto.address = user.address
+                    userDto.email = user.email
+                    userDto.telegram = user.telegram
+                    userDto.password = user.password
+                    sessionInfoService.setUserFields(userDto)
+                }
                 "redirect:/menu"
             } else {
                 model.addAttribute("error", "Invalid email or password")
