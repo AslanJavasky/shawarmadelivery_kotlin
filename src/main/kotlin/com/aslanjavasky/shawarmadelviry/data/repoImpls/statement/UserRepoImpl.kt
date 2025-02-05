@@ -6,7 +6,6 @@ import com.aslanjavasky.shawarmadelviry.domain.repo.UserRepo
 import org.springframework.stereotype.Repository
 import java.sql.SQLException
 import java.sql.Statement
-import java.util.logging.Logger
 import javax.sql.DataSource
 
 @Repository("URwPS")

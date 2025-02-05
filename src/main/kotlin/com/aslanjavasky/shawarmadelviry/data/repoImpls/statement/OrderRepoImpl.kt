@@ -41,9 +41,13 @@ class OrderRepoImpl(
                 for (item in order.itemList!!) {
                     ps.setLong(1, order.id!!)
                     ps.setLong(2, item!!.id)
-
-                    val affectedRow = ps.executeUpdate()
-                    if (affectedRow == 0) throw SQLException("Failed to save menuitem related to order, no rows affected")
+                    ps.addBatch()
+                }
+                val batchResults = ps.executeBatch()
+                for (result in batchResults) {
+                    if (result == Statement.EXECUTE_FAILED) {
+                        throw SQLException("Failed to save menuitem related to order, no rows affected")
+                    }
                 }
             }
         }
@@ -127,7 +131,7 @@ class OrderRepoImpl(
                 ps.setLong(1, orderId)
 
                 ps.executeQuery().use { rs ->
-                    while (rs.next()){
+                    while (rs.next()) {
                         order.id = rs.getLong("id")
                         order.dateTime = rs.getTimestamp("date_time").toLocalDateTime()
                         order.status = OrderStatus.valueOf(rs.getString("status"))
