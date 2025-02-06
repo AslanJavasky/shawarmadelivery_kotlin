@@ -44,7 +44,7 @@ class DeliveryRepoImpl(
         dataSource.connection.use { connection ->
             connection.prepareStatement(sql).use { ps ->
                 ps.setString(1, delivery.address)
-                ps.setString(2, delivery.address)
+                ps.setString(2, delivery.phone)
                 ps.setTimestamp(3, Timestamp.valueOf(delivery.dateTime))
                 ps.setLong(4, delivery.order!!.id!!)
                 ps.setLong(5, delivery.id!!)

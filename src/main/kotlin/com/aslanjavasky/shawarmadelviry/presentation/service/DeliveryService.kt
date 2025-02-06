@@ -7,5 +7,5 @@ import org.springframework.stereotype.Service
 
 @Service
 class DeliveryService(
-    @Qualifier("DRwPS") private val deliveryRepo: DeliveryRepo
+    @Qualifier("DRwJT") private val deliveryRepo: DeliveryRepo
 ):DeliveryInterractor(deliveryRepo)
