@@ -10,7 +10,7 @@ import java.math.BigDecimal
 
 @Component
 class ApplicationStartupRunner(
-    @Qualifier("MRwPS") private val menuItemRepo: MenuItemRepo
+    @Qualifier("MRwJT") private val menuItemRepo: MenuItemRepo
 ) : CommandLineRunner {
 
     override fun run(vararg args: String?) {
