@@ -17,8 +17,8 @@ import javax.sql.DataSource
 @Repository("ORwJT")
 class OrderRepoImpl(
     private val jdbcTemplate: JdbcTemplate,
-    @Qualifier("MRwPS") private val menuItemRepoImpl: MenuItemRepo,
-    @Qualifier("URwPS") private val userRepoImpl: UserRepoImpl,
+    @Qualifier("MRwJT") private val menuItemRepoImpl: MenuItemRepo,
+    @Qualifier("URwJT") private val userRepoImpl: UserRepoImpl,
 ) : OrderRepo {
 
     override fun saveOrder(order: IOrder): IOrder {
@@ -46,102 +46,65 @@ class OrderRepoImpl(
 
     override fun updateOrder(order: IOrder): IOrder {
         val sql = "UPDATE orders SET date_time=?, status=?, user_id=?, total_price=?  WHERE id=?"
-        dataSource.connection.use { connection ->
-            connection.prepareStatement(sql).use { ps ->
 
-                ps.setTimestamp(1, Timestamp.valueOf(order.dateTime))
-                ps.setString(2, order.status!!.name)
-                ps.setLong(3, order.user!!.id!!)
-                ps.setBigDecimal(4, order.totalPrice)
-                ps.setLong(5, order.id!!)
-
-                val affectedRow = ps.executeUpdate()
-                if (affectedRow == 0) throw SQLException("Failed to update order, no rows affected")
-
-            }
+        val affectedRow = jdbcTemplate.update(sql) { ps ->
+            ps.setTimestamp(1, Timestamp.valueOf(order.dateTime))
+            ps.setString(2, order.status!!.name)
+            ps.setLong(3, order.user!!.id!!)
+            ps.setBigDecimal(4, order.totalPrice)
+            ps.setLong(5, order.id!!)
         }
+
+        if (affectedRow == 0) throw RuntimeException("Failed to update order, no rows affected")
         return order
     }
 
     override fun getOrdersByUser(user: IUser): List<IOrder> {
-        val orders = mutableListOf<IOrder>()
         val sql = "SELECT * FROM orders WHERE user_id=?"
-        dataSource.connection.use { connection ->
-            connection.prepareStatement(sql).use { ps ->
-                ps.setLong(1, user.id!!)
-                ps.executeQuery().use { rs ->
-                    while (rs.next()) {
-                        val orderId = rs.getLong("id")
-                        getOrderById(orderId)?.let { orders.add(it) }
-                    }
-                }
-            }
+        return jdbcTemplate.query(sql, arrayOf(user.id)) { rs, _ ->
+            getOrderById(rs.getLong("id"))
         }
-        return orders
     }
 
 
     override fun getOrdersByStatus(orderStatus: OrderStatus): List<IOrder> {
-        val orders = mutableListOf<IOrder>()
         val sql = "SELECT * FROM orders WHERE status=?"
-        return dataSource.connection.use { connection ->
-            connection.prepareStatement(sql).use { ps ->
-                ps.setString(1, orderStatus.name)
-                ps.executeQuery().use { rs ->
-                    while (rs.next()) {
-                        val orderId = rs.getLong("id")
-                        getOrderById(orderId)?.let { orders.add(it) }
-                    }
-                }
-                orders
-            }
+        return jdbcTemplate.query(sql, arrayOf(orderStatus.name)) { rs, _ ->
+            getOrderById(rs.getLong("id"))
         }
     }
 
     override fun updateOrderStatus(id: Long, status: OrderStatus): IOrder {
         val sql = "UPDATE orders SET status=? WHERE id=?"
-        dataSource.connection.use { connection ->
-            connection.prepareStatement(sql).use { ps ->
-                ps.setString(1, status.name)
-                ps.setLong(2, id)
-
-                val affectedRow = ps.executeUpdate()
-                if (affectedRow == 0) throw SQLException("Failed to update order, no rows affected")
-            }
-            return getOrderById(id)
+        val affectedRow = jdbcTemplate.update(sql) { ps ->
+            ps.setString(1, status.name)
+            ps.setLong(2, id)
         }
+        if (affectedRow == 0) throw RuntimeException("Failed to update order, no rows affected")
+        return getOrderById(id)
     }
 
     fun getOrderById(orderId: Long): IOrder {
         val sql = "SELECT * FROM orders WHERE id=?"
-        val sqlFromOrdersMenuItems = "SELECT * FROM orders_menu_items WHERE order_id=?"
-        dataSource.connection.use { connection ->
-            val order = Order()
-            connection.prepareStatement(sql).use { ps ->
-                ps.setLong(1, orderId)
 
-                ps.executeQuery().use { rs ->
-                    while (rs.next()) {
-                        order.id = rs.getLong("id")
-                        order.dateTime = rs.getTimestamp("date_time").toLocalDateTime()
-                        order.status = OrderStatus.valueOf(rs.getString("status"))
-                        order.user = userRepoImpl.getUserById(rs.getLong("user_id"))
-                        order.totalPrice = rs.getBigDecimal("total_price")
-                    }
-                }
+        return jdbcTemplate.queryForObject(sql, arrayOf(orderId)) { rs, _ ->
+            Order().apply {
+                id = rs.getLong("id")
+                dateTime = rs.getTimestamp("date_time").toLocalDateTime()
+                status = OrderStatus.valueOf(rs.getString("status"))
+                user = userRepoImpl.getUserById(rs.getLong("user_id"))
+                totalPrice = rs.getBigDecimal("total_price")
+                itemList = getMenuItemsForOrder(orderId)
             }
-            connection.prepareStatement(sqlFromOrdersMenuItems).use { ps ->
-                ps.setLong(1, orderId)
-                val menuItems = mutableListOf<IMenuItem>()
-                ps.executeQuery().use { rs ->
-                    while (rs.next()) {
-                        val menuItemId = rs.getLong("menu_item_id")
-                        menuItemRepoImpl.getMenuItemById(menuItemId)?.let { menuItems.add(it) }
-                    }
-                }
-                order.itemList = menuItems
-            }
-            return order
+        } ?: throw RuntimeException("Failed to select order, no order with orderId:$orderId in the table \"orders\"")
+    }
+
+
+    private fun getMenuItemsForOrder(orderId: Long): List<IMenuItem?> {
+        val sql = "SELECT * FROM orders_menu_items WHERE order_id=?"
+        return jdbcTemplate.query(sql, arrayOf(orderId)) { rs, _ ->
+            menuItemRepoImpl.getMenuItemById(rs.getLong("menu_item_id"))
         }
     }
+
 }
