@@ -50,7 +50,7 @@ class DeliveryRepoImpl(
     override fun getDeliveryById(id: Long): IDelivery? {
         val sql = "SELECT * FROM deliveries WHERE id=?"
 
-        return jdbcTemplate.queryForObject(sql, arrayOf(id)) { rs, _ ->
+        return jdbcTemplate.query(sql, { rs, _ ->
             Delivery().apply {
                 this.id = rs.getLong("id")
                 address = rs.getString("address")
@@ -58,6 +58,6 @@ class DeliveryRepoImpl(
                 dateTime = rs.getTimestamp("date_time").toLocalDateTime()
                 order = orderRepoImpl.getOrderById(rs.getLong("order_id"))
             }
-        }
+        }, id)[0] ?: null
     }
 }

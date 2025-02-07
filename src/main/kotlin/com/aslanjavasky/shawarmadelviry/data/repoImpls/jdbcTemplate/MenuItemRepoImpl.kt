@@ -44,26 +44,26 @@ class MenuItemRepoImpl(
 
     override fun getMenuItemById(id: Long): IMenuItem? {
         val sql = "SELECT * FROM menu_items WHERE id=?;"
-        return jdbcTemplate.queryForObject(sql, arrayOf(id)) { rs, _ ->
+        return jdbcTemplate.query(sql, { rs, _ ->
             MenuItem().apply {
                 this.id = rs.getLong("id")
                 name = rs.getString("name")
                 menuSection = MenuSection.valueOf(rs.getString("menu_section"))
                 price = rs.getBigDecimal("price")
             }
-        }
+        }, id)[0] ?: null
     }
 
     override fun getMenuItemsBySection(section: MenuSection): List<IMenuItem> {
         val sql = "SELECT * FROM menu_items WHERE menu_section = ?"
-        return jdbcTemplate.query(sql, arrayOf(section.name)) { rs, _ ->
+        return jdbcTemplate.query(sql,  { rs, _ ->
             MenuItem().apply {
                 id = rs.getLong("id")
                 name = rs.getString("name")
                 menuSection = MenuSection.valueOf(rs.getString("menu_section"))
                 price = rs.getBigDecimal("price")
             }
-        }
+        }, section.name)
     }
 
     override fun deleteMenuItem(menuItem: IMenuItem) {

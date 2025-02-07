@@ -1,6 +1,5 @@
 package com.aslanjavasky.shawarmadelviry.domain.model
 
-
 data class User(
     override var id: Long? = null,
     override var name: String? = null,
@@ -10,3 +9,4 @@ data class User(
     override var telegram: String? = null,
     override var address: String? = null
 ) : IUser
+

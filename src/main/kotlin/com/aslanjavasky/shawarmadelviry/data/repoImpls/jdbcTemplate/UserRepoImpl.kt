@@ -3,6 +3,7 @@ package com.aslanjavasky.shawarmadelviry.data.repoImpls.jdbcTemplate
 import com.aslanjavasky.shawarmadelviry.domain.model.IUser
 import com.aslanjavasky.shawarmadelviry.domain.model.User
 import com.aslanjavasky.shawarmadelviry.domain.repo.UserRepo
+import org.springframework.jdbc.core.BeanPropertyRowMapper
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.PreparedStatementCreator
 import org.springframework.jdbc.support.GeneratedKeyHolder
@@ -64,35 +65,45 @@ class UserRepoImpl(
     }
 
 
-    override fun getUserByEmail(_email: String): IUser? {
+    override fun getUserByEmail(email: String): IUser? {
         val sql = "SELECT * FROM users WHERE email=?"
-        return jdbcTemplate.queryForObject(sql, arrayOf(_email)) { rs, _ ->
-            User().apply {
-                id = rs.getLong("id")
-                name = rs.getString("name")
-                email = rs.getString("email")
-                password = rs.getString("password")
-                phone = rs.getString("phone")
-                address = rs.getString("address")
-                telegram = rs.getString("telegram")
-            }
-        }
+
+        return jdbcTemplate.queryForStream(sql, BeanPropertyRowMapper.newInstance(User::class.java), email)
+            .findFirst().orElse(null)
+
+//        return jdbcTemplate.queryForObject(sql, arrayOf(email)) { rs, _ ->
+//            User().apply {
+//                id = rs.getLong("id")
+//                name = rs.getString("name")
+//                this.email = rs.getString("email")
+//                password = rs.getString("password")
+//                phone = rs.getString("phone")
+//                address = rs.getString("address")
+//                telegram = rs.getString("telegram")
+//            }
+//        }
     }
 
 
-    fun getUserById(userId: Long): IUser? {
+    fun getUserById(id: Long): IUser? {
         val sql = "SELECT * FROM users WHERE id=?"
-        return jdbcTemplate.queryForObject(sql, arrayOf(userId)) { rs, _ ->
-            User().apply {
-                id = rs.getLong("id")
-                name = rs.getString("name")
-                email = rs.getString("email")
-                password = rs.getString("password")
-                telegram = rs.getString("telegram")
-                phone = rs.getString("phone")
-                address = rs.getString("address")
-            }
 
-        }
+        return jdbcTemplate.queryForStream(
+            sql, BeanPropertyRowMapper.newInstance(User::class.java), id)
+            .findFirst().orElse(null)
+
+
+//        return jdbcTemplate.queryForObject(sql, arrayOf(userId)) { rs, _ ->
+//            User().apply {
+//                id = rs.getLong("id")
+//                name = rs.getString("name")
+//                email = rs.getString("email")
+//                password = rs.getString("password")
+//                telegram = rs.getString("telegram")
+//                phone = rs.getString("phone")
+//                address = rs.getString("address")
+//            }
+//
+//        }
     }
 }

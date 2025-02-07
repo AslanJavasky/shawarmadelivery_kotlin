@@ -60,18 +60,21 @@ class OrderRepoImpl(
     }
 
     override fun getOrdersByUser(user: IUser): List<IOrder> {
+        //todo
         val sql = "SELECT * FROM orders WHERE user_id=?"
-        return jdbcTemplate.query(sql, arrayOf(user.id)) { rs, _ ->
+        return jdbcTemplate.query(sql, { rs, _ ->
             getOrderById(rs.getLong("id"))
-        }
+        },user.id)
     }
 
 
     override fun getOrdersByStatus(orderStatus: OrderStatus): List<IOrder> {
+
+        //todo
         val sql = "SELECT * FROM orders WHERE status=?"
-        return jdbcTemplate.query(sql, arrayOf(orderStatus.name)) { rs, _ ->
+        return jdbcTemplate.query(sql, { rs, _ ->
             getOrderById(rs.getLong("id"))
-        }
+        }, orderStatus.name)
     }
 
     override fun updateOrderStatus(id: Long, status: OrderStatus): IOrder {
@@ -87,7 +90,7 @@ class OrderRepoImpl(
     fun getOrderById(orderId: Long): IOrder {
         val sql = "SELECT * FROM orders WHERE id=?"
 
-        return jdbcTemplate.queryForObject(sql, arrayOf(orderId)) { rs, _ ->
+        return jdbcTemplate.query(sql, { rs, _ ->
             Order().apply {
                 id = rs.getLong("id")
                 dateTime = rs.getTimestamp("date_time").toLocalDateTime()
@@ -96,15 +99,16 @@ class OrderRepoImpl(
                 totalPrice = rs.getBigDecimal("total_price")
                 itemList = getMenuItemsForOrder(orderId)
             }
-        } ?: throw RuntimeException("Failed to select order, no order with orderId:$orderId in the table \"orders\"")
+        }, orderId)[0] ?: throw RuntimeException("Failed to select order, no order with orderId:$orderId in the table \"orders\"")
     }
 
 
     private fun getMenuItemsForOrder(orderId: Long): List<IMenuItem?> {
+        //TODO
         val sql = "SELECT * FROM orders_menu_items WHERE order_id=?"
-        return jdbcTemplate.query(sql, arrayOf(orderId)) { rs, _ ->
+        return jdbcTemplate.query(sql, { rs, _ ->
             menuItemRepoImpl.getMenuItemById(rs.getLong("menu_item_id"))
-        }
+        }, orderId)
     }
 
 }
