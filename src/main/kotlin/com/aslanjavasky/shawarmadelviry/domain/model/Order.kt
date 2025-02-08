@@ -8,6 +8,6 @@ data class Order(
     override var dateTime: LocalDateTime? = null,
     override var status: OrderStatus? = null,
     override var user: IUser? = null,
-    override var itemList: List<IMenuItem?>? = null,
+    override var itemList: MutableList<IMenuItem>? = null,
     override var totalPrice: BigDecimal? = null
 ) : IOrder

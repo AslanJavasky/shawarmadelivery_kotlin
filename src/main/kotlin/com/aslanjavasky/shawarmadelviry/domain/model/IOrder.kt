@@ -8,6 +8,6 @@ interface IOrder {
     var dateTime: LocalDateTime?
     var status: OrderStatus?
     var user: IUser?
-    var itemList: List<IMenuItem?>?
+    var itemList: MutableList<IMenuItem>?
     var totalPrice: BigDecimal?
 }

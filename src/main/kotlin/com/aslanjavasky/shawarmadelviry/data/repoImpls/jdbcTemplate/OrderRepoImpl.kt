@@ -6,13 +6,12 @@ import com.aslanjavasky.shawarmadelviry.domain.repo.OrderRepo
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.PreparedStatementCreator
+import org.springframework.jdbc.core.ResultSetExtractor
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.stereotype.Repository
-import org.springframework.transaction.annotation.Transactional
+import java.sql.ResultSet
 import java.sql.SQLException
-import java.sql.Statement
 import java.sql.Timestamp
-import javax.sql.DataSource
 
 @Repository("ORwJT")
 class OrderRepoImpl(
@@ -70,11 +69,84 @@ class OrderRepoImpl(
 
     override fun getOrdersByStatus(orderStatus: OrderStatus): List<IOrder> {
 
-        //todo
-        val sql = "SELECT * FROM orders WHERE status=?"
-        return jdbcTemplate.query(sql, { rs, _ ->
-            getOrderById(rs.getLong("id"))
-        }, orderStatus.name)
+        val sql = """
+                SELECT 
+                    U.id AS user_id,
+                    U.name AS user_name,
+                    U.email,
+                    U.password,
+                    U.telegram,
+                    U.phone, 
+                    U.address,
+                    OMI.menu_item_id,
+                    MI.name as menu_item_name,
+                    MI.menu_section,
+                    MI.price,
+                    OMI.order_id,
+                    O.date_time,
+                    O.status,
+                    O.total_price
+                FROM orders O
+                JOIN users U ON O.user_id=U.id
+                JOIN orders_menu_items OMI ON O.id=OMI.order_id
+                JOIN menu_items MI ON MI.id=OMI.menu_item_id
+                WHERE O.status=?
+                ORDER BY O.id
+                
+                """.trimIndent();
+
+        return jdbcTemplate.query(sql, ResultSetExtractor{ rs ->
+            val orderMap = linkedMapOf<Long,IOrder>()
+            while (rs.next()){
+                val orderId=rs.getLong("order_id")
+                val order= orderMap.getOrPut(orderId){
+                    try {
+                        createOrderFromRS(rs).apply {
+                            user=createUserFromRS(rs)
+                            itemList= mutableListOf<IMenuItem>()
+                        }
+                    }catch (e:SQLException){
+                        throw RuntimeException("Failed to get order by status")
+                    }
+                }
+                order.itemList!!.add(createMenuItemFromRS(rs))
+            }
+            orderMap.values.toList()
+        },
+            orderStatus.name) ?: throw RuntimeException("Failed to get order by status")
+    }
+
+    @Throws(SQLException::class)
+    private fun createMenuItemFromRS(rs: ResultSet): MenuItem {
+        val menuItem = MenuItem()
+        menuItem.id = rs.getLong("menu_item_id")
+        menuItem.name = rs.getString("menu_item_name")
+        menuItem.menuSection = MenuSection.valueOf(rs.getString("menu_section"))
+        menuItem.price = rs.getBigDecimal("price")
+        return menuItem
+    }
+
+    @Throws(SQLException::class)
+    private fun createOrderFromRS(rs: ResultSet): IOrder {
+        val newOrder: IOrder = Order()
+        newOrder.id = rs.getLong("order_id")
+        newOrder.dateTime = rs.getTimestamp("date_time").toLocalDateTime()
+        newOrder.status = OrderStatus.valueOf(rs.getString("status"))
+        newOrder.totalPrice = rs.getBigDecimal("total_price")
+        return newOrder
+    }
+
+    @Throws(SQLException::class)
+    private fun createUserFromRS(rs: ResultSet): IUser {
+        val user: IUser = User()
+        user.id = rs.getLong("user_id")
+        user.name = rs.getString("user_name")
+        user.email = rs.getString("email")
+        user.password = rs.getString("password")
+        user.telegram = rs.getString("telegram")
+        user.phone = rs.getString("phone")
+        user.address = rs.getString("address")
+        return user
     }
 
     override fun updateOrderStatus(id: Long, status: OrderStatus): IOrder {
@@ -103,7 +175,7 @@ class OrderRepoImpl(
     }
 
 
-    private fun getMenuItemsForOrder(orderId: Long): List<IMenuItem?> {
+    private fun getMenuItemsForOrder(orderId: Long): MutableList<IMenuItem?> {
         //TODO
         val sql = "SELECT * FROM orders_menu_items WHERE order_id=?"
         return jdbcTemplate.query(sql, { rs, _ ->
