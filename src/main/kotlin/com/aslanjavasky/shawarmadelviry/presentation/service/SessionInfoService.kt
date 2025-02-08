@@ -18,11 +18,11 @@ data class SessionInfoService(
     var address: String? = "",
     var telegram: String? = "",
     var email: String? = "",
-    var cart: List<IMenuItem?> = emptyList()
+    var cart: MutableList<IMenuItem>? = mutableListOf()
 ) {
 
 
-    fun getTotalPrice() = cart.map { it!!.price }.fold(BigDecimal.ZERO) { acc, price ->
+    fun getTotalPrice() = cart!!.map { it!!.price }.fold(BigDecimal.ZERO) { acc, price ->
         acc.add(price)
     }
 

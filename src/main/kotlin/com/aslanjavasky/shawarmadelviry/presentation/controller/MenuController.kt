@@ -1,5 +1,6 @@
 package com.aslanjavasky.shawarmadelviry.presentation.controller
 
+import com.aslanjavasky.shawarmadelviry.domain.model.IMenuItem
 import com.aslanjavasky.shawarmadelviry.domain.model.MenuSection
 import com.aslanjavasky.shawarmadelviry.presentation.service.MenuItemService
 import com.aslanjavasky.shawarmadelviry.presentation.service.SessionInfoService
@@ -41,11 +42,12 @@ class MenuController(
             return showMenu(model)
         }
 
-        val selectedMenuItems = selectedId!!.flatMapIndexed { index, id ->
+        val selectedMenuItems:MutableList<IMenuItem>? = selectedId!!.flatMapIndexed { index, id ->
             List(quantities!![index]) {
                 menuservice.getMenuItemById(id)
             }
-        }
+        }?.filterNotNull()?.toMutableList()
+
         sessionInfoService.cart = selectedMenuItems
         model.addAttribute("sessionInfoService", sessionInfoService)
         return "redirect:/order"

@@ -178,31 +178,48 @@ class OrderRepoImpl(
             ps.setLong(2, id)
         }
         if (affectedRow == 0) throw RuntimeException("Failed to update order, no rows affected")
-        return getOrderById(id)
+        return getOrderById(id)!!
     }
 
-    fun getOrderById(orderId: Long): IOrder {
-        val sql = "SELECT * FROM orders WHERE id=?"
+    fun getOrderById(orderId: Long): IOrder? {
+        val sql = """
+                SELECT 
+                    U.id AS user_id,
+                    U.name AS user_name,
+                    U.email,
+                    U.password,
+                    U.telegram,
+                    U.phone, 
+                    U.address,
+                    OMI.menu_item_id,
+                    MI.name as menu_item_name,
+                    MI.menu_section,
+                    MI.price,
+                    OMI.order_id,
+                    O.date_time,
+                    O.status,
+                    O.total_price
+                FROM orders O
+                JOIN users U ON O.user_id=U.id
+                JOIN orders_menu_items OMI ON O.id=OMI.order_id
+                JOIN menu_items MI ON MI.id=OMI.menu_item_id
+                WHERE O.id=?
+                ORDER BY O.id
+                
+                """.trimIndent()
 
-        return jdbcTemplate.query(sql, { rs, _ ->
-            Order().apply {
-                id = rs.getLong("id")
-                dateTime = rs.getTimestamp("date_time").toLocalDateTime()
-                status = OrderStatus.valueOf(rs.getString("status"))
-                user = userRepoImpl.getUserById(rs.getLong("user_id"))
-                totalPrice = rs.getBigDecimal("total_price")
-                itemList = getMenuItemsForOrder(orderId)
+        return jdbcTemplate.query(sql, ResultSetExtractor { rs ->
+            var order: IOrder? = null
+            while (rs.next()) {
+                if (order == null) {
+                    order = createOrderFromRS(rs).apply {
+                        user = createUserFromRS(rs)
+                        itemList = mutableListOf()
+                    }
+                }
+                order.itemList!!.add(createMenuItemFromRS(rs))
             }
-        }, orderId)[0]
-            ?: throw RuntimeException("Failed to select order, no order with orderId:$orderId in the table \"orders\"")
-    }
-
-
-    private fun getMenuItemsForOrder(orderId: Long): MutableList<IMenuItem?> {
-        //TODO
-        val sql = "SELECT * FROM orders_menu_items WHERE order_id=?"
-        return jdbcTemplate.query(sql, { rs, _ ->
-            menuItemRepoImpl.getMenuItemById(rs.getLong("menu_item_id"))
+            order
         }, orderId)
     }
 
