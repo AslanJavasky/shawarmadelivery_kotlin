@@ -59,11 +59,31 @@ class OrderRepoImpl(
     }
 
     override fun getOrdersByUser(user: IUser): List<IOrder> {
-        //todo
-        val sql = "SELECT * FROM orders WHERE user_id=?"
+
+        val sql = """
+                SELECT
+                O.id AS order_id,
+                U.id AS user_id,
+                U.name AS user_name,
+                U.email,
+                U.password,
+                U.telegram,
+                U.phone,
+                U.address,
+                O.date_time,
+                O.status,
+                O.total_price
+                FROM orders O
+                JOIN users U ON O.user_id=U.id
+                WHERE O.user_id=?
+                ORDER BY O.id
+                """.trimIndent()
+
         return jdbcTemplate.query(sql, { rs, _ ->
-            getOrderById(rs.getLong("id"))
-        },user.id)
+            val order = createOrderFromRS(rs)
+            order.user = createUserFromRS(rs)
+            order
+        }, user.id)
     }
 
 
@@ -95,25 +115,27 @@ class OrderRepoImpl(
                 
                 """.trimIndent();
 
-        return jdbcTemplate.query(sql, ResultSetExtractor{ rs ->
-            val orderMap = linkedMapOf<Long,IOrder>()
-            while (rs.next()){
-                val orderId=rs.getLong("order_id")
-                val order= orderMap.getOrPut(orderId){
-                    try {
-                        createOrderFromRS(rs).apply {
-                            user=createUserFromRS(rs)
-                            itemList= mutableListOf<IMenuItem>()
+        return jdbcTemplate.query(
+            sql, ResultSetExtractor { rs ->
+                val orderMap = linkedMapOf<Long, IOrder>()
+                while (rs.next()) {
+                    val orderId = rs.getLong("order_id")
+                    val order = orderMap.getOrPut(orderId) {
+                        try {
+                            createOrderFromRS(rs).apply {
+                                user = createUserFromRS(rs)
+                                itemList = mutableListOf<IMenuItem>()
+                            }
+                        } catch (e: SQLException) {
+                            throw RuntimeException("Failed to get order by status")
                         }
-                    }catch (e:SQLException){
-                        throw RuntimeException("Failed to get order by status")
                     }
+                    order.itemList!!.add(createMenuItemFromRS(rs))
                 }
-                order.itemList!!.add(createMenuItemFromRS(rs))
-            }
-            orderMap.values.toList()
-        },
-            orderStatus.name) ?: throw RuntimeException("Failed to get order by status")
+                orderMap.values.toList()
+            },
+            orderStatus.name
+        ) ?: throw RuntimeException("Failed to get order by status")
     }
 
     @Throws(SQLException::class)
@@ -171,7 +193,8 @@ class OrderRepoImpl(
                 totalPrice = rs.getBigDecimal("total_price")
                 itemList = getMenuItemsForOrder(orderId)
             }
-        }, orderId)[0] ?: throw RuntimeException("Failed to select order, no order with orderId:$orderId in the table \"orders\"")
+        }, orderId)[0]
+            ?: throw RuntimeException("Failed to select order, no order with orderId:$orderId in the table \"orders\"")
     }
 
 
