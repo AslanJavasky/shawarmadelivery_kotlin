@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.konan.properties.Properties
 plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
-    id("org.springframework.boot") version "3.4.1"
+    id("org.springframework.boot") version "3.4.2"
     id("io.spring.dependency-management") version "1.1.7"
     id("nu.studer.jooq") version "9.0"
     id("java")
@@ -72,6 +72,7 @@ jooq {
             generateSchemaSourceOnCompilation.set(true)  // default (can be omitted)
 
             jooqConfiguration.apply {
+//                logging = org.jooq.meta.jaxb.Logging.DEBUG
                 jdbc.apply {
 //					logger.WARM
 //                    driver = "org.postgresql.Driver"
@@ -93,6 +94,7 @@ jooq {
                         name = "org.jooq.meta.postgres.PostgresDatabase"
                         inputSchema = "public"
                         includes = ".*"
+//                        excludes = "deliveries"
 //						forcedTypes.addAll(listOf(
 //							ForcedType().apply {
 //								name = "varchar"
@@ -103,10 +105,16 @@ jooq {
 //								name = "varchar"
 //								includeExpression = ".*"
 //								includeTypes = "INET"
-//							}
+//							},
+//                            ForcedType().apply {
+//                                name = "FORCE_QUOTED"
+//                                includeExpression = ".*"
+//                                includeTypes = ".*"
+//                            }
 //						))
                     }
                     generate.apply {
+                        isTables= true
                         isPojos = true
                         isDaos = true
                         isSpringAnnotations = true
@@ -117,9 +125,10 @@ jooq {
                     }
                     target.apply {
                         packageName = "com.aslanjavasky.shawarmadelviry.generated.jooq"
-                        directory = "target/generated-sources/jooq/main"
+//                        directory = "target/generated-sources/jooq"
+                        directory = "build/generated-sources/jooq"
                     }
-//                    strategy.name = "org.jooq.codegen.DefaultGeneratorStrategy"
+                    strategy.name = "org.jooq.codegen.DefaultGeneratorStrategy"
                 }
             }
         }

@@ -7,6 +7,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class MenuItemService(
-    @Qualifier("MRwNPJT") private val repo: MenuItemRepo
+    @Qualifier("MRwJOOQ") private val repo: MenuItemRepo
 ) : MenuItemInterractor(repo) {
 }
