@@ -33,6 +33,6 @@ CREATE TABLE IF NOT EXISTS  deliveries(
 	id BIGSERIAL PRIMARY KEY,
 	address VARCHAR(255) NOT NULL,
 	phone VARCHAR(255) NOT NULL,
-	date_time VARCHAR(255) NOT NULL,
+	date_time TIMESTAMP NOT NULL,
 	order_id BIGINT REFERENCES orders(id)
 );
