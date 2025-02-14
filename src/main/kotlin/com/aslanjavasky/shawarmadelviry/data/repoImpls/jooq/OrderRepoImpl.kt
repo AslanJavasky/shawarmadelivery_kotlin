@@ -1,25 +1,11 @@
 package com.aslanjavasky.shawarmadelviry.data.repoImpls.jooq
 
 import com.aslanjavasky.shawarmadelviry.domain.model.*
-import com.aslanjavasky.shawarmadelviry.domain.repo.MenuItemRepo
 import com.aslanjavasky.shawarmadelviry.domain.repo.OrderRepo
-import com.aslanjavasky.shawarmadelviry.generated.jooq.Tables.ORDERS
-import com.aslanjavasky.shawarmadelviry.generated.jooq.Tables.ORDERS_MENU_ITEMS
-import com.aslanjavasky.shawarmadelviry.generated.jooq.tables.Orders
-import com.aslanjavasky.shawarmadelviry.generated.jooq.tables.OrdersMenuItems
+import com.aslanjavasky.shawarmadelviry.generated.jooq.Tables.*
 import org.jooq.DSLContext
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.core.PreparedStatementCreator
-import org.springframework.jdbc.core.ResultSetExtractor
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
-import org.springframework.jdbc.support.GeneratedKeyHolder
+import org.jooq.Record
 import org.springframework.stereotype.Repository
-import org.springframework.transaction.annotation.Transactional
-import java.sql.ResultSet
-import java.sql.SQLException
-import java.sql.Timestamp
 
 @Repository("ORwJOOQ")
 class OrderRepoImpl(
@@ -39,7 +25,7 @@ class OrderRepoImpl(
 
         order.id = orderId ?: throw RuntimeException("Failed to save orders, no generated key")
 
-        val queryCollection=order.itemList!!.map { item ->
+        val queryCollection = order.itemList!!.map { item ->
             dslContext.insertInto(ORDERS_MENU_ITEMS)
                 .set(ORDERS_MENU_ITEMS.ORDER_ID, order.id)
                 .set(ORDERS_MENU_ITEMS.MENU_ITEM_ID, item.id)
@@ -50,184 +36,185 @@ class OrderRepoImpl(
 
 
     override fun updateOrder(order: IOrder): IOrder {
-        val sql = "UPDATE orders SET date_time = :date_time, status = :status, " +
-                "user_id = :user_id, total_price = :total_price WHERE id = :id"
 
-        val params = MapSqlParameterSource()
-            .addValue("date_time", Timestamp.valueOf(order.dateTime))
-            .addValue("status", order.status!!.name)
-            .addValue("user_id", order.user!!.id)
-            .addValue("total_price", order.totalPrice)
-            .addValue("id", order.id)
-
-        val affectedRow = namedParameterJdbcTemplate.update(sql, params)
+        val affectedRow = dslContext.update(ORDERS)
+            .set(ORDERS.DATE_TIME, order.dateTime)
+            .set(ORDERS.STATUS, order.status!!.name)
+            .set(ORDERS.USER_ID, order.user!!.id)
+            .set(ORDERS.TOTAL_PRICE, order.totalPrice)
+            .where(ORDERS.ID.eq(order.id))
+            .execute()
         if (affectedRow == 0) throw RuntimeException("Failed to update order, no rows affected")
         return order
     }
 
     override fun getOrdersByUser(user: IUser): List<IOrder> {
 
-        val sql = """
-                SELECT
-                O.id AS order_id,
-                U.id AS user_id,
-                U.name AS user_name,
-                U.email,
-                U.password,
-                U.telegram,
-                U.phone,
-                U.address,
-                O.date_time,
-                O.status,
-                O.total_price
-                FROM orders O
-                JOIN users U ON O.user_id=U.id
-                WHERE O.user_id= :user_id
-                ORDER BY O.id
-                """.trimIndent()
-
-        return namedParameterJdbcTemplate.query(sql, MapSqlParameterSource("user_id", user.id), { rs, _ ->
-            val order = createOrderFromRS(rs)
-            order.user = createUserFromRS(rs)
-            order
-        })
+        return dslContext.select(
+            ORDERS.ID.`as`("order_id"),
+            USERS.ID.`as`("user_id"),
+            USERS.NAME.`as`("user_name"),
+            USERS.EMAIL,
+            USERS.PASSWORD,
+            USERS.TELEGRAM,
+            USERS.PHONE,
+            USERS.ADDRESS,
+            ORDERS.DATE_TIME,
+            ORDERS.STATUS,
+            ORDERS.TOTAL_PRICE,
+            ORDERS_MENU_ITEMS.MENU_ITEM_ID,
+            MENU_ITEMS.NAME.`as`("menu_item_name"),
+            MENU_ITEMS.MENU_SECTION,
+            MENU_ITEMS.PRICE,
+        )
+            .from(ORDERS)
+            .join(USERS).on(ORDERS.USER_ID.eq(USERS.ID))
+            .join(ORDERS_MENU_ITEMS).on(ORDERS.ID.eq(ORDERS_MENU_ITEMS.ORDER_ID))
+            .join(MENU_ITEMS).on(ORDERS_MENU_ITEMS.MENU_ITEM_ID.eq(MENU_ITEMS.ID))
+            .where(USERS.ID.eq(user.id))
+            .orderBy(ORDERS.ID)
+            .fetchGroups(ORDERS_MENU_ITEMS.ORDER_ID)
+            .values
+            .map { records ->
+                var order: IOrder? = null
+                for (record in records) {
+                    if (order == null) {
+                        order = createOrderFromRecord(record)
+                        order.user = createUserFromRecord(record)
+                        order.itemList = ArrayList()
+                    }
+                    order.itemList!!.add(createMenuItemFromRecord(record))
+                }
+                order!!
+            }
     }
 
 
     override fun getOrdersByStatus(orderStatus: OrderStatus): List<IOrder> {
 
-        val sql = """
-                SELECT 
-                    U.id AS user_id,
-                    U.name AS user_name,
-                    U.email,
-                    U.password,
-                    U.telegram,
-                    U.phone, 
-                    U.address,
-                    OMI.menu_item_id,
-                    MI.name as menu_item_name,
-                    MI.menu_section,
-                    MI.price,
-                    OMI.order_id,
-                    O.date_time,
-                    O.status,
-                    O.total_price
-                FROM orders O
-                JOIN users U ON O.user_id=U.id
-                JOIN orders_menu_items OMI ON O.id=OMI.order_id
-                JOIN menu_items MI ON MI.id=OMI.menu_item_id
-                WHERE O.status = :status 
-                ORDER BY O.id
-                
-                """.trimIndent();
-
-        return namedParameterJdbcTemplate.query(
-            sql, MapSqlParameterSource("status", orderStatus.name), ResultSetExtractor { rs ->
-                val orderMap = linkedMapOf<Long, IOrder>()
-                while (rs.next()) {
-                    val orderId = rs.getLong("order_id")
-                    val order = orderMap.getOrPut(orderId) {
-                        try {
-                            createOrderFromRS(rs).apply {
-                                user = createUserFromRS(rs)
-                                itemList = mutableListOf<IMenuItem>()
-                            }
-                        } catch (e: SQLException) {
-                            throw RuntimeException("Failed to get order by status")
-                        }
+        return dslContext.select(
+            USERS.ID.`as`("user_id"),
+            USERS.NAME.`as`("user_name"),
+            USERS.EMAIL,
+            USERS.PASSWORD,
+            USERS.TELEGRAM,
+            USERS.PHONE,
+            USERS.ADDRESS,
+            ORDERS_MENU_ITEMS.MENU_ITEM_ID,
+            MENU_ITEMS.NAME.`as`("menu_item_name"),
+            MENU_ITEMS.MENU_SECTION,
+            MENU_ITEMS.PRICE,
+            ORDERS_MENU_ITEMS.ORDER_ID,
+            ORDERS.DATE_TIME,
+            ORDERS.STATUS,
+            ORDERS.TOTAL_PRICE
+        )
+            .from(ORDERS)
+            .join(USERS).on(ORDERS.USER_ID.eq(USERS.ID))
+            .join(ORDERS_MENU_ITEMS).on(ORDERS.ID.eq(ORDERS_MENU_ITEMS.ORDER_ID))
+            .join(MENU_ITEMS).on(ORDERS_MENU_ITEMS.MENU_ITEM_ID.eq(MENU_ITEMS.ID))
+            .where(ORDERS.STATUS.eq(orderStatus.name))
+            .orderBy(ORDERS.ID)
+            .fetchGroups(ORDERS_MENU_ITEMS.ORDER_ID)
+            .values
+            .map { records ->
+                var order: IOrder? = null
+                for (record in records) {
+                    if (order == null) {
+                        order = createOrderFromRecord(record)
+                        order.user = createUserFromRecord(record)
+                        order.itemList = ArrayList()
                     }
-                    order.itemList!!.add(createMenuItemFromRS(rs))
+                    order.itemList!!.add(createMenuItemFromRecord(record))
                 }
-                orderMap.values.toList()
+                order!!
             }
-        ) ?: throw RuntimeException("Failed to get order by status")
     }
 
-    @Throws(SQLException::class)
-    private fun createMenuItemFromRS(rs: ResultSet): MenuItem {
-        val menuItem = MenuItem()
-        menuItem.id = rs.getLong("menu_item_id")
-        menuItem.name = rs.getString("menu_item_name")
-        menuItem.menuSection = MenuSection.valueOf(rs.getString("menu_section"))
-        menuItem.price = rs.getBigDecimal("price")
-        return menuItem
-    }
-
-    @Throws(SQLException::class)
-    private fun createOrderFromRS(rs: ResultSet): IOrder {
-        val newOrder: IOrder = Order()
-        newOrder.id = rs.getLong("order_id")
-        newOrder.dateTime = rs.getTimestamp("date_time").toLocalDateTime()
-        newOrder.status = OrderStatus.valueOf(rs.getString("status"))
-        newOrder.totalPrice = rs.getBigDecimal("total_price")
-        return newOrder
-    }
-
-    @Throws(SQLException::class)
-    private fun createUserFromRS(rs: ResultSet): IUser {
-        val user: IUser = User()
-        user.id = rs.getLong("user_id")
-        user.name = rs.getString("user_name")
-        user.email = rs.getString("email")
-        user.password = rs.getString("password")
-        user.telegram = rs.getString("telegram")
-        user.phone = rs.getString("phone")
-        user.address = rs.getString("address")
-        return user
-    }
 
     override fun updateOrderStatus(id: Long, status: OrderStatus): IOrder {
-        val sql = "UPDATE orders SET status = :status WHERE id = :id"
-        val params = MapSqlParameterSource()
-            .addValue("status", status.name)
-            .addValue("id", id)
-        val affectedRow = namedParameterJdbcTemplate.update(sql, params)
+
+        val affectedRow = dslContext.update(ORDERS)
+            .set(ORDERS.STATUS, status.name)
+            .where(ORDERS.ID.eq(id))
+            .execute()
         if (affectedRow == 0) throw RuntimeException("Failed to update order, no rows affected")
         return getOrderById(id)!!
     }
 
     fun getOrderById(orderId: Long): IOrder? {
-        val sql = """
-                SELECT 
-                    U.id AS user_id,
-                    U.name AS user_name,
-                    U.email,
-                    U.password,
-                    U.telegram,
-                    U.phone, 
-                    U.address,
-                    OMI.menu_item_id,
-                    MI.name as menu_item_name,
-                    MI.menu_section,
-                    MI.price,
-                    OMI.order_id,
-                    O.date_time,
-                    O.status,
-                    O.total_price
-                FROM orders O
-                JOIN users U ON O.user_id=U.id
-                JOIN orders_menu_items OMI ON O.id=OMI.order_id
-                JOIN menu_items MI ON MI.id=OMI.menu_item_id
-                WHERE O.id = :id
-                ORDER BY O.id
-                
-                """.trimIndent()
 
-        return namedParameterJdbcTemplate.query(
-            sql, MapSqlParameterSource("id", orderId), ResultSetExtractor { rs ->
+        return dslContext.select(
+            USERS.ID.`as`("user_id"),
+            USERS.NAME.`as`("user_name"),
+            USERS.EMAIL,
+            USERS.PASSWORD,
+            USERS.TELEGRAM,
+            USERS.PHONE,
+            USERS.ADDRESS,
+            ORDERS_MENU_ITEMS.MENU_ITEM_ID,
+            MENU_ITEMS.NAME.`as`("menu_item_name"),
+            MENU_ITEMS.MENU_SECTION,
+            MENU_ITEMS.PRICE,
+            ORDERS_MENU_ITEMS.ORDER_ID,
+            ORDERS.DATE_TIME,
+            ORDERS.STATUS,
+            ORDERS.TOTAL_PRICE
+        )
+            .from(ORDERS)
+            .join(USERS).on(ORDERS.USER_ID.eq(USERS.ID))
+            .join(ORDERS_MENU_ITEMS).on(ORDERS.ID.eq(ORDERS_MENU_ITEMS.ORDER_ID))
+            .join(MENU_ITEMS).on(ORDERS_MENU_ITEMS.MENU_ITEM_ID.eq(MENU_ITEMS.ID))
+            .where(ORDERS_MENU_ITEMS.ORDER_ID.eq(orderId))
+            .orderBy(ORDERS.ID)
+            .fetchGroups(ORDERS_MENU_ITEMS.ORDER_ID)
+            .values
+            .stream()
+            .map { records ->
                 var order: IOrder? = null
-                while (rs.next()) {
+                for (record in records) {
                     if (order == null) {
-                        order = createOrderFromRS(rs).apply {
-                            user = createUserFromRS(rs)
-                            itemList = mutableListOf()
-                        }
+                        order = createOrderFromRecord(record)
+                        order.user = createUserFromRecord(record)
+                        order.itemList = ArrayList()
                     }
-                    order.itemList!!.add(createMenuItemFromRS(rs))
+                    order.itemList!!.add(createMenuItemFromRecord(record))
                 }
-                order
-            })
+                order!!
+            }
+            .findFirst().orElse(null)
+
+    }
+
+    private fun createMenuItemFromRecord(record: Record): IMenuItem {
+        val menuItem = MenuItem()
+        menuItem.id = record.get(ORDERS_MENU_ITEMS.MENU_ITEM_ID)
+        menuItem.name = record.get("menu_item_name", String::class.java)
+        menuItem.menuSection = MenuSection.valueOf(record.get(MENU_ITEMS.MENU_SECTION))
+        menuItem.price = record.get(MENU_ITEMS.PRICE)
+        return menuItem
+    }
+
+
+    private fun createUserFromRecord(record: Record): IUser {
+        val user: IUser = User()
+        user.id = record.get("user_id", Long::class.java)
+        user.name = record.get("user_name", String::class.java)
+        user.email = record.get(USERS.EMAIL)
+        user.password = record.get(USERS.PASSWORD)
+        user.telegram = record.get(USERS.TELEGRAM)
+        user.phone = record.get(USERS.PHONE)
+        user.address = record.get(USERS.ADDRESS)
+        return user
+    }
+
+    private fun createOrderFromRecord(record: Record): IOrder {
+        val order: IOrder = Order()
+        order.id = record.get("order_id", Long::class.java)
+        order.dateTime = record.get(ORDERS.DATE_TIME)
+        order.status = OrderStatus.valueOf(record.get(ORDERS.STATUS))
+        order.totalPrice = record.get(ORDERS.TOTAL_PRICE)
+        return order
     }
 
 }

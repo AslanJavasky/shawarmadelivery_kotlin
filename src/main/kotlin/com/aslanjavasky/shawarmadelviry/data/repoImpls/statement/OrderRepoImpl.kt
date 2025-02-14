@@ -5,7 +5,6 @@ import com.aslanjavasky.shawarmadelviry.domain.repo.MenuItemRepo
 import com.aslanjavasky.shawarmadelviry.domain.repo.OrderRepo
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Repository
-import org.springframework.transaction.annotation.Transactional
 import java.sql.SQLException
 import java.sql.Statement
 import java.sql.Timestamp
@@ -83,14 +82,66 @@ class OrderRepoImpl(
 
     override fun getOrdersByUser(user: IUser): List<IOrder> {
         val orders = mutableListOf<IOrder>()
-        val sql = "SELECT * FROM orders WHERE user_id=?"
+
+        val sql = """
+                SELECT
+                  O.id AS order_id,
+                  U.id AS user_id,
+                  U.name AS user_name,
+                  U.email,
+                  U.password,
+                  U.telegram,
+                  U.phone,
+                  U.address,
+                  O.date_time,
+                  O.status,
+                  O.total_price,
+                  MI.id AS menu_item_id,
+                  MI.name AS menu_item_name,
+                  MI.menu_section,
+                  MI.price
+                FROM orders O
+                JOIN users U ON O.user_id=U.id
+                JOIN orders_menu_items OMI ON OMI.order_id=O.id
+                JOIN menu_items MI ON MI.id=OMI.menu_item_id
+                WHERE O.user_id = ?
+                ORDER BY O.id
+                """.trimIndent()
         dataSource.connection.use { connection ->
             connection.prepareStatement(sql).use { ps ->
                 ps.setLong(1, user.id!!)
                 ps.executeQuery().use { rs ->
+
                     while (rs.next()) {
-                        val orderId = rs.getLong("id")
-                        getOrderById(orderId)?.let { orders.add(it) }
+
+                        val order: IOrder? = null
+                        if (order == null) {
+                            order?.id = rs.getLong("order_id")
+                            order?.dateTime = rs.getTimestamp("date_time").toLocalDateTime()
+                            order?.status = OrderStatus.valueOf(rs.getString("status"))
+                            order?.totalPrice = rs.getBigDecimal("total_price")
+
+                            val _user: IUser = User()
+                            _user.id = rs.getLong("user_id")
+                            _user.address = rs.getString("address")
+                            _user.email = rs.getString("email")
+                            _user.name = rs.getString("user_name")
+                            _user.password = rs.getString("password")
+                            _user.phone = rs.getString("phone")
+                            _user.telegram = rs.getString("telegram")
+                            order?.user = _user
+
+                            order?.itemList = ArrayList<IMenuItem>()
+                        }
+                        val menuItem: IMenuItem = MenuItem()
+                        menuItem.id = rs.getLong("menu_item_id")
+                        menuItem.menuSection = MenuSection.valueOf(rs.getString("menu_section"))
+                        menuItem.name = rs.getString("menu_item_name")
+                        menuItem.price = rs.getBigDecimal("price")
+
+                        order!!.itemList!!.add(menuItem)
+
+                        orders.add(order)
                     }
                 }
             }

@@ -62,28 +62,51 @@ class OrderRepoImpl(
 
         val sql = """
                 SELECT
-                O.id AS order_id,
-                U.id AS user_id,
-                U.name AS user_name,
-                U.email,
-                U.password,
-                U.telegram,
-                U.phone,
-                U.address,
-                O.date_time,
-                O.status,
-                O.total_price
+                  O.id AS order_id,
+                  U.id AS user_id,
+                  U.name AS user_name,
+                  U.email,
+                  U.password,
+                  U.telegram,
+                  U.phone,
+                  U.address,
+                  O.date_time,
+                  O.status,
+                  O.total_price,
+                  MI.id AS menu_item_id,
+                  MI.name AS menu_item_name,
+                  MI.menu_section,
+                  MI.price
                 FROM orders O
                 JOIN users U ON O.user_id=U.id
-                WHERE O.user_id=?
+                JOIN orders_menu_items OMI ON OMI.order_id=O.id
+                JOIN menu_items MI ON MI.id=OMI.menu_item_id
+                WHERE O.user_id = ?
                 ORDER BY O.id
                 """.trimIndent()
 
-        return jdbcTemplate.query(sql, { rs, _ ->
-            val order = createOrderFromRS(rs)
-            order.user = createUserFromRS(rs)
-            order
-        }, user.id)
+        return jdbcTemplate.query(
+            sql,
+            ResultSetExtractor { rs ->
+                val orderMap = linkedMapOf<Long, IOrder>()
+                while (rs.next()) {
+                    val orderId = rs.getLong("order_id")
+                    val order = orderMap.getOrPut(orderId) {
+                        try {
+                            createOrderFromRS(rs).apply {
+                                this.user = createUserFromRS(rs)
+                                itemList = mutableListOf<IMenuItem>()
+                            }
+                        } catch (e: SQLException) {
+                            throw RuntimeException("Failed to get order by status")
+                        }
+                    }
+                    order.itemList!!.add(createMenuItemFromRS(rs))
+                }
+                orderMap.values.toList()
+            },
+            user.id
+        ) ?: throw RuntimeException("Failed to get order by status")
     }
 
 
