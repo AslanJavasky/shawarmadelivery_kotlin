@@ -69,7 +69,7 @@ jooq {
 
     configurations {
         create("main") {  // name of the jOOQ configuration
-            generateSchemaSourceOnCompilation.set(true)  // default (can be omitted)
+            generateSchemaSourceOnCompilation.set(true)
 
             jooqConfiguration.apply {
 //                logging = org.jooq.meta.jaxb.Logging.DEBUG
@@ -79,7 +79,7 @@ jooq {
 //                    url = "jdbc:postgresql://localhost:5432/shawarma_db_kotlin"
 //                    user = "postgres"
 //                    password = "pg555111"
-                    driver =springProps.getProperty("spring.datasource.driver-class-name")
+                    driver = springProps.getProperty("spring.datasource.driver-class-name")
                     url = springProps.getProperty("spring.datasource.url")
                     user = springProps.getProperty("spring.datasource.username")
                     password = springProps.getProperty("spring.datasource.password")
@@ -114,7 +114,7 @@ jooq {
 //						))
                     }
                     generate.apply {
-                        isTables= true
+                        isTables = true
                         isPojos = true
                         isDaos = true
                         isSpringAnnotations = true
@@ -134,3 +134,5 @@ jooq {
         }
     }
 }
+
+

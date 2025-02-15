@@ -8,7 +8,7 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
 
-@Component
+//@Component
 class ApplicationStartupRunner(
     @Qualifier("MRwJT") private val menuItemRepo: MenuItemRepo
 ) : CommandLineRunner {
