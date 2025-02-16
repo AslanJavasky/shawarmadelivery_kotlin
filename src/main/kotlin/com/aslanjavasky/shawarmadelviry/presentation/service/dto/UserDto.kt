@@ -5,8 +5,12 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
+import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Table
 
+@Table("users")
 data class UserDto(
+    @Id
     override var id: Long? = null,
     @field:NotBlank(message = "Name required")
     override var name: String? = null,

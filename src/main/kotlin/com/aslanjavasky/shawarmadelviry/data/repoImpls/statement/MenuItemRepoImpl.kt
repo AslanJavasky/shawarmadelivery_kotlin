@@ -19,7 +19,7 @@ class MenuItemRepoImpl(
                 "UPDATE SET name=EXCLUDED.name,menu_section=EXCLUDED.menu_section,price=EXCLUDED.price")
         datasource.connection.use { connection ->
             connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).use { ps ->
-                ps.setLong(1, menuItem.id)
+                ps.setLong(1, menuItem.id!!)
                 ps.setString(2, menuItem.name)
                 ps.setString(3, menuItem.menuSection.name)
                 ps.setBigDecimal(4, menuItem.price)
@@ -45,7 +45,7 @@ class MenuItemRepoImpl(
                 ps.setString(1, menuItem.name)
                 ps.setString(2, menuItem.menuSection.name)
                 ps.setBigDecimal(3, menuItem.price)
-                ps.setLong(4, menuItem.id)
+                ps.setLong(4, menuItem.id!!)
                 val affectedRow = ps.executeUpdate()
                 if (affectedRow == 0) throw SQLException("Failed to update menu item, no rows affected")
             }
@@ -97,7 +97,7 @@ class MenuItemRepoImpl(
         val sql = "DELETE FROM menu_items WHERE id=?"
         datasource.connection.use { connection ->
             connection.prepareStatement(sql).use { ps ->
-                ps.setLong(1, menuItem.id)
+                ps.setLong(1, menuItem.id!!)
 
                 val affectedRow = ps.executeUpdate()
                 if (affectedRow == 0) throw SQLException("Failed to delete menu item, no rows affected")

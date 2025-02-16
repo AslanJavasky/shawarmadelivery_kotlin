@@ -24,7 +24,7 @@ class MenuItemRepoImpl(
         val keyHolder = GeneratedKeyHolder()
         jdbcTemplate.update(PreparedStatementCreator { connection ->
             val ps = connection.prepareStatement(sql, arrayOf("id"))
-            ps.setLong(1, menuItem.id)
+            ps.setLong(1, menuItem.id!!)
             ps.setString(2, menuItem.name)
             ps.setString(3, menuItem.menuSection.name)
             ps.setBigDecimal(4, menuItem.price)

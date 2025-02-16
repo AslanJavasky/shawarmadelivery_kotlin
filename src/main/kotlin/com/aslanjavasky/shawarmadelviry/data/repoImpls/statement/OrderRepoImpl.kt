@@ -42,7 +42,7 @@ class OrderRepoImpl(
                 connection.prepareStatement(sqlOrderMenuitems).use { ps ->
                     for (item in order.itemList!!) {
                         ps.setLong(1, order.id!!)
-                        ps.setLong(2, item!!.id)
+                        ps.setLong(2, item!!.id!!)
                         ps.addBatch()
                     }
                     val batchResults = ps.executeBatch()
