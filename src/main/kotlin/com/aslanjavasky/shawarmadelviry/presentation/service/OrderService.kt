@@ -7,5 +7,5 @@ import org.springframework.stereotype.Service
 
 @Service
 class OrderService(
-    @Qualifier("ORwJOOQ") private val orderRepo: OrderRepo
+    @Qualifier("OrderRepoAdapter_CRUD") private val orderRepo: OrderRepo
 ):OrderInterractor(orderRepo)
