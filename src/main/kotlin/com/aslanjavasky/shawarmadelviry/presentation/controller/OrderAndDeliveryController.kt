@@ -68,16 +68,16 @@ class OrderAndDeliveryController(
             dateTime = LocalDateTime.now(),
             user = user
         )
+        val savedOrder = orderService.createOrder(order)
         val delivery = Delivery(
             dateTime = LocalDateTime.now(),
             address = sessionInfoService.address,
             phone = sessionInfoService.phone,
-            order = order
+            order = savedOrder
         )
-
-        userService.updateUser(order.user!!)
-        orderService.createOrder(delivery.order!!)
         deliveryService.createDelivery(delivery)
+        userService.updateUser(order.user!!)
+
 
 
         return "redirect:/menu"

@@ -25,7 +25,7 @@ class OrderRepoAdapter(
     override fun saveOrder(order: IOrder): IOrder {
         val savedOrder = orderRepository.save(order.toOrderEntity())
         order.itemList!!.forEach { orderRepository.insertToOrdersMenuItems(savedOrder.id!!, it.id!!) }
-        return order
+        return savedOrder.toIOrder(order.user!!, order.itemList!!)
     }
 
     override fun updateOrder(order: IOrder): IOrder {
@@ -51,7 +51,7 @@ class OrderRepoAdapter(
         return orderRepository.getByUserId(user.id!!).map { getIOrderById(it.id!!, user) }
     }
 
-    private fun getIOrderById(orderId: Long, user: IUser? = null): IOrder {
+    public fun getIOrderById(orderId: Long, user: IUser? = null): IOrder {
         val orderEntity = orderRepository.findById(orderId)
             .orElseThrow { RuntimeException("Order not found with id : $orderId") }
 
