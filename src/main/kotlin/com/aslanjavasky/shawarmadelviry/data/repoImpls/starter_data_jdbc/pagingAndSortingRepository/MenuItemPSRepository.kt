@@ -3,6 +3,7 @@ package com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.paging
 import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository.MenuItemRepository
 import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.entity.MenuItemEntity
 import com.aslanjavasky.shawarmadelviry.domain.model.MenuSection
+import org.springframework.context.annotation.Primary
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -10,7 +11,7 @@ import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
 import java.math.BigDecimal
 
-@Repository
+@Repository("MenuItemRepoExtPSRepo")
 interface MenuItemPSRepository : PagingAndSortingRepository<MenuItemEntity, Long>,
     MenuItemRepository {
 

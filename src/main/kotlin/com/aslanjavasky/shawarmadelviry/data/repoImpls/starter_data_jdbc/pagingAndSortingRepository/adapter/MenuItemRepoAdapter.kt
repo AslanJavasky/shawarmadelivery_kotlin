@@ -6,6 +6,7 @@ import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.pagingA
 import com.aslanjavasky.shawarmadelviry.domain.model.IMenuItem
 import com.aslanjavasky.shawarmadelviry.domain.model.MenuSection
 import com.aslanjavasky.shawarmadelviry.domain.repo.MenuItemRepo
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -14,7 +15,7 @@ import java.math.BigDecimal
 
 @Component("MenuItemRepoAdapter_PageSortING")
 class MenuItemRepoAdapter(
-    private val repo: MenuItemPSRepository
+   @Qualifier("MenuItemRepoExtPSRepo")  private val repo: MenuItemPSRepository
 ) : MenuItemRepo {
     override fun saveMenuItem(menuItem: IMenuItem): IMenuItem {
 
