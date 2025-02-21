@@ -1,6 +1,6 @@
 package com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository
 
-import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository.entity.OrderEntity
+import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.entity.OrderEntity
 import com.aslanjavasky.shawarmadelviry.domain.model.OrderStatus
 import org.springframework.data.jdbc.repository.query.Modifying
 import org.springframework.data.jdbc.repository.query.Query

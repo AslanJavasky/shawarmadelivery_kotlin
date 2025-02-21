@@ -7,5 +7,5 @@ import org.springframework.stereotype.Service
 
 @Service
 class UserService(
-    @Qualifier("UserRepoAdapter_CRUD") repo: UserRepo
+    @Qualifier("UserRepoAdapter_PageSortING") repo: UserRepo
 ) : UserInterractor(repo)

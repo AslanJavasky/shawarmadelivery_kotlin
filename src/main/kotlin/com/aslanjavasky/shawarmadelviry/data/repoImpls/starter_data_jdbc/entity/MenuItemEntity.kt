@@ -1,4 +1,4 @@
-package com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository.entity
+package com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.entity
 
 import com.aslanjavasky.shawarmadelviry.domain.model.*
 import org.springframework.data.annotation.Id

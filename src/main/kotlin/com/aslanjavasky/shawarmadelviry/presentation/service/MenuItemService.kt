@@ -7,6 +7,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class MenuItemService(
-    @Qualifier("MenuItemRepoAdapter_CRUD") private val repo: MenuItemRepo
+    @Qualifier("MenuItemRepoAdapter_PageSortING") private val repo: MenuItemRepo
 ) : MenuItemInterractor(repo) {
 }

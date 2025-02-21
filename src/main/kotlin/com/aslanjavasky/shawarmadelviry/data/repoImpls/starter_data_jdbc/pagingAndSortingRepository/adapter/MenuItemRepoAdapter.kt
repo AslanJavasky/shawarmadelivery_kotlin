@@ -1,17 +1,20 @@
-package com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository.adapter
+package com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.pagingAndSortingRepository.adapter
 
-import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository.MenuItemRepository
 import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.entity.toIMenuItem
 import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.entity.toMenuItemEntity
+import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.pagingAndSortingRepository.MenuItemPSRepository
 import com.aslanjavasky.shawarmadelviry.domain.model.IMenuItem
 import com.aslanjavasky.shawarmadelviry.domain.model.MenuSection
 import com.aslanjavasky.shawarmadelviry.domain.repo.MenuItemRepo
-import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
+import java.math.BigDecimal
 
-@Component("MenuItemRepoAdapter_CRUD")
+@Component("MenuItemRepoAdapter_PageSortING")
 class MenuItemRepoAdapter(
-    @Qualifier("MenuItemRepoExtCrudRepo") private val repo: MenuItemRepository
+    private val repo: MenuItemPSRepository
 ) : MenuItemRepo {
     override fun saveMenuItem(menuItem: IMenuItem): IMenuItem {
 
@@ -53,4 +56,23 @@ class MenuItemRepoAdapter(
     override fun deleteAll() {
         repo.deleteAll()
     }
+
+    fun getAllMenuItems(pageable: Pageable): Page<IMenuItem> =
+        repo.findAll(pageable).map { it.toIMenuItem() }
+
+    fun getAllMenuItems(sort: Sort): List<IMenuItem> =
+        repo.findAll(sort).map { it.toIMenuItem() }
+
+    fun getMenuItemsBySection(menuSection: MenuSection, pageable: Pageable): Page<IMenuItem> =
+        repo.findByMenuSection(menuSection, pageable).map { it.toIMenuItem() }
+
+    fun getMenuItemsBySectionOrderByPriceAsc(menuSection: MenuSection, sort: Sort): List<IMenuItem> =
+        repo.findByMenuSectionOrderByPriceAsc(menuSection, sort)
+
+    fun getMenuItemsByOrderLessThanEqual(price:BigDecimal, pageable: Pageable) : Page<IMenuItem> =
+        repo.findByPriceLessThanEqual(price, pageable).map { it.toIMenuItem() }
+
+    fun getMenuItemsByPriceGreaterThanEqualOrderByNameAsc(price: BigDecimal, sort: Sort):List<IMenuItem> =
+        repo.findByPriceGreaterThanEqualOrderByNameAsc(price, sort).map { it.toIMenuItem() }
+
 }

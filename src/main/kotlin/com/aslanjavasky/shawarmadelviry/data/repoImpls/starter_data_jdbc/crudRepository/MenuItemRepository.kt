@@ -1,6 +1,6 @@
 package com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository
 
-import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository.entity.MenuItemEntity
+import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.entity.MenuItemEntity
 import com.aslanjavasky.shawarmadelviry.domain.model.MenuSection
 import org.springframework.data.jdbc.repository.query.Modifying
 import org.springframework.data.jdbc.repository.query.Query

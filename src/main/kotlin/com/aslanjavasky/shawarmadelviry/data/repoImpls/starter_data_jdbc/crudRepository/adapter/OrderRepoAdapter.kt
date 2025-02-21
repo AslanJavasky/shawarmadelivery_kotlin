@@ -3,10 +3,10 @@ package com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRe
 import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository.MenuItemRepository
 import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository.OrderRepository
 import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository.UserRepository
-import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository.entity.toIMenuItem
-import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository.entity.toIOrder
-import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository.entity.toIUser
-import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository.entity.toOrderEntity
+import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.entity.toIMenuItem
+import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.entity.toIOrder
+import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.entity.toIUser
+import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.entity.toOrderEntity
 import com.aslanjavasky.shawarmadelviry.domain.model.IOrder
 import com.aslanjavasky.shawarmadelviry.domain.model.IUser
 import com.aslanjavasky.shawarmadelviry.domain.model.Order

@@ -1,8 +1,8 @@
 package com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository.adapter
 
 import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository.DeliveryRepository
-import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository.entity.toDeliveryEntity
-import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.crudRepository.entity.toIDelivery
+import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.entity.toDeliveryEntity
+import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jdbc.entity.toIDelivery
 import com.aslanjavasky.shawarmadelviry.domain.model.IDelivery
 import com.aslanjavasky.shawarmadelviry.domain.repo.DeliveryRepo
 import org.springframework.beans.factory.annotation.Qualifier
