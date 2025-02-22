@@ -7,5 +7,5 @@ import org.springframework.stereotype.Service
 
 @Service
 class DeliveryService(
-    @Qualifier("DeliveryRepoAdapter_CRUD") private val deliveryRepo: DeliveryRepo
+    @Qualifier("DeliveryRepoAdapter_PageSortING") private val deliveryRepo: DeliveryRepo
 ) : DeliveryInterractor(deliveryRepo)
