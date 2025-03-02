@@ -1,5 +1,6 @@
 package com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jpa.entity
 
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -21,7 +22,7 @@ data class DeliveryEntity(
     @Column(nullable = false, name = "date_time")
     var dateTime: LocalDateTime = LocalDateTime.now(),
 
-    @OneToOne
+    @OneToOne(cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH])
     @JoinColumn(name = "order_id", nullable = false)
     var order: OrderEntity = OrderEntity()
 )

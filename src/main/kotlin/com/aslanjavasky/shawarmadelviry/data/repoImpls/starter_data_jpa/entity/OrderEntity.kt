@@ -17,14 +17,14 @@ data class OrderEntity(
     @Enumerated(EnumType.STRING)
     var status: OrderStatus = OrderStatus.NEW,
 
-    @ManyToOne
+    @ManyToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "user_id", nullable = false)
     var user: UserEntity = UserEntity(),
 
     @Column(name = "total_price", precision = 10, scale = 2, nullable = false)
     var totalPrice: BigDecimal = BigDecimal.ZERO,
 
-    @ManyToMany
+    @ManyToMany(cascade = [CascadeType.ALL])
     @JoinTable(
         name = "orders_menu_items",
         joinColumns = [JoinColumn(name = "order_id")],
