@@ -1,5 +1,8 @@
 package com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jpa.entity
 
+import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jpa.entity.UserEntity
+import com.aslanjavasky.shawarmadelviry.domain.model.IUser
+import com.aslanjavasky.shawarmadelviry.domain.model.User
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -8,7 +11,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
 
 @Entity(name = "users")
-data class UserEntity(
+data class UserEntity (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
@@ -27,4 +30,24 @@ data class UserEntity(
 
     @OneToMany(mappedBy = "user")
     var orders:List<OrderEntity> = emptyList()
+)
+
+fun IUser.toUserEntity() = UserEntity(
+    id = this.id,
+    name = this.name!!,
+    email = this.email!!,
+    password = this.password!!,
+    phone = this.phone,
+    telegram = this.telegram,
+    address = this.address,
+)
+
+fun UserEntity.toIUser() = User(
+    id = this.id,
+    name = this.name,
+    email = this.email,
+    password = this.password,
+    phone = this.phone,
+    telegram = this.telegram,
+    address = this.address,
 )
