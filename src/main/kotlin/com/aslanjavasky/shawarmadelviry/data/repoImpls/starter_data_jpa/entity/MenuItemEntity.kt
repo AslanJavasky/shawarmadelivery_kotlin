@@ -1,5 +1,7 @@
 package com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jpa.entity
 
+import com.aslanjavasky.shawarmadelviry.domain.model.IMenuItem
+import com.aslanjavasky.shawarmadelviry.domain.model.MenuItem
 import com.aslanjavasky.shawarmadelviry.domain.model.MenuSection
 import jakarta.persistence.*
 import java.math.BigDecimal
@@ -18,4 +20,18 @@ data class MenuItemEntity(
 
     @Column(nullable = false, precision = 10, scale = 2)
     var price: BigDecimal = BigDecimal.ZERO
+)
+
+fun IMenuItem.toMenuItemEntity() = MenuItemEntity(
+    id = this.id,
+    name = this.name,
+    menuSection = this.menuSection,
+    price = this.price
+)
+
+fun MenuItemEntity.toIMenuItem() = MenuItem(
+    id = this.id!!,
+    name = this.name,
+    menuSection = this.menuSection,
+    price = this.price
 )

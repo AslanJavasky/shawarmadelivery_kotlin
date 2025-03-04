@@ -6,11 +6,12 @@ import com.aslanjavasky.shawarmadelviry.domain.repo.MenuItemRepo
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 
-//@Component
+@Component
 class ApplicationStartupRunner(
-    @Qualifier("MenuItemRepoAdapter_CRUD") private val menuItemRepo: MenuItemRepo
+    @Qualifier("MenuItemRepoAdapter_JPA") private val menuItemRepo: MenuItemRepo
 ) : CommandLineRunner {
 
     override fun run(vararg args: String?) {
