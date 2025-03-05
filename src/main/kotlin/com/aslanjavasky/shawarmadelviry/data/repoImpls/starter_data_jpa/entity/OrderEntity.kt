@@ -1,6 +1,6 @@
 package com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jpa.entity
 
-import com.aslanjavasky.shawarmadelviry.domain.model.OrderStatus
+import com.aslanjavasky.shawarmadelviry.domain.model.*
 import jakarta.persistence.*
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -30,6 +30,23 @@ data class OrderEntity(
         joinColumns = [JoinColumn(name = "order_id")],
         inverseJoinColumns = [JoinColumn(name="menu_item_id")]
     )
-    var itemList:MutableList<MenuItemEntity> = mutableListOf()
+    var itemList:MutableList<MenuItemEntity>? = mutableListOf()
+)
 
+fun IOrder.toOrderEntity() = OrderEntity(
+    id = this.id,
+    dateTime = this.dateTime!!,
+    status = this.status!!,
+    user = this.user!!.toUserEntity(),
+    totalPrice = this.totalPrice!!,
+    itemList = this.itemList!!.map { it.toMenuItemEntity() }.toMutableList()
+)
+
+fun OrderEntity.toIOrder() = Order(
+    id = this.id,
+    dateTime = this.dateTime!!,
+    status = this.status!!,
+    user = user.toIUser(),
+    itemList = itemList!!.map { it.toIMenuItem() }.toMutableList(),
+    totalPrice = this.totalPrice!!
 )
