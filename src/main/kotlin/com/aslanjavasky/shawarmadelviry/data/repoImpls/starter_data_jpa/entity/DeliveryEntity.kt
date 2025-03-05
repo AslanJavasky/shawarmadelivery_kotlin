@@ -1,5 +1,9 @@
 package com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jpa.entity
 
+import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jpa.entity.DeliveryEntity
+import com.aslanjavasky.shawarmadelviry.domain.model.Delivery
+import com.aslanjavasky.shawarmadelviry.domain.model.IDelivery
+import com.aslanjavasky.shawarmadelviry.domain.model.IOrder
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -25,4 +29,20 @@ data class DeliveryEntity(
     @OneToOne(cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH])
     @JoinColumn(name = "order_id", nullable = false)
     var order: OrderEntity = OrderEntity()
+)
+
+fun IDelivery.toDeliveryEntity() = DeliveryEntity(
+    id = this.id,
+    address = this.address!!,
+    phone = this.phone!!,
+    dateTime = this.dateTime!!,
+    order = this.order!!.toOrderEntity()
+)
+
+fun DeliveryEntity.toIDelivery() = Delivery(
+    id = this.id,
+    address = this.address,
+    phone = this.phone,
+    dateTime = this.dateTime,
+    order = this.order.toIOrder()
 )
