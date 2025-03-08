@@ -4,15 +4,12 @@ import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jpa.entity.D
 import com.aslanjavasky.shawarmadelviry.domain.model.Delivery
 import com.aslanjavasky.shawarmadelviry.domain.model.IDelivery
 import com.aslanjavasky.shawarmadelviry.domain.model.IOrder
-import jakarta.persistence.CascadeType
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.OneToOne
+import jakarta.persistence.*
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
+
 
 @Entity(name = "deliveries")
 data class DeliveryEntity(
@@ -29,7 +26,7 @@ data class DeliveryEntity(
     @OneToOne(cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH])
     @JoinColumn(name = "order_id", nullable = false)
     var order: OrderEntity = OrderEntity()
-)
+) : BaseEntity()
 
 fun IDelivery.toDeliveryEntity() = DeliveryEntity(
     id = this.id,

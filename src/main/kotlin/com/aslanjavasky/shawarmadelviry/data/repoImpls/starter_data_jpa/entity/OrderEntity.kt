@@ -2,6 +2,9 @@ package com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jpa.entity
 
 import com.aslanjavasky.shawarmadelviry.domain.model.*
 import jakarta.persistence.*
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -28,10 +31,10 @@ data class OrderEntity(
     @JoinTable(
         name = "orders_menu_items",
         joinColumns = [JoinColumn(name = "order_id")],
-        inverseJoinColumns = [JoinColumn(name="menu_item_id")]
+        inverseJoinColumns = [JoinColumn(name = "menu_item_id")]
     )
-    var itemList:MutableList<MenuItemEntity>? = mutableListOf()
-)
+    var itemList: MutableList<MenuItemEntity>? = mutableListOf()
+) : BaseEntity()
 
 fun IOrder.toOrderEntity() = OrderEntity(
     id = this.id,
