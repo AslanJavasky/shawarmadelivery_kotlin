@@ -5,6 +5,7 @@ import com.aslanjavasky.shawarmadelviry.domain.repo.MenuItemRepo
 import com.aslanjavasky.shawarmadelviry.domain.repo.OrderRepo
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import java.sql.SQLException
 import java.sql.Statement
 import java.sql.Timestamp
@@ -17,6 +18,7 @@ class OrderRepoImpl(
     @Qualifier("URwPS") private val userRepoImpl: UserRepoImpl,
 ) : OrderRepo {
 
+    @Transactional
     override fun saveOrder(order: IOrder): IOrder {
         val sqlOrder = "INSERT INTO orders(date_time, status, user_id, total_price) VALUES(?,?,?,?);"
         val sqlOrderMenuitems = "INSERT INTO orders_menu_items(order_id, menu_item_id) VALUES(?,?);"
@@ -61,6 +63,7 @@ class OrderRepoImpl(
         return order
     }
 
+    @Transactional
     override fun updateOrder(order: IOrder): IOrder {
         val sql = "UPDATE orders SET date_time=?, status=?, user_id=?, total_price=?  WHERE id=?"
         dataSource.connection.use { connection ->
@@ -80,6 +83,7 @@ class OrderRepoImpl(
         return order
     }
 
+    @Transactional
     override fun getOrdersByUser(user: IUser): List<IOrder> {
         val orders = mutableListOf<IOrder>()
 
@@ -150,6 +154,7 @@ class OrderRepoImpl(
     }
 
 
+    @Transactional
     override fun getOrdersByStatus(orderStatus: OrderStatus): List<IOrder> {
         val orders = mutableListOf<IOrder>()
         val sql = "SELECT * FROM orders WHERE status=?"
@@ -167,6 +172,7 @@ class OrderRepoImpl(
         }
     }
 
+    @Transactional
     override fun updateOrderStatus(id: Long, status: OrderStatus): IOrder {
         val sql = "UPDATE orders SET status=? WHERE id=?"
         dataSource.connection.use { connection ->
@@ -181,6 +187,7 @@ class OrderRepoImpl(
         }
     }
 
+    @Transactional
     fun getOrderById(orderId: Long): IOrder {
         val sql = "SELECT * FROM orders WHERE id=?"
         val sqlFromOrdersMenuItems = "SELECT * FROM orders_menu_items WHERE order_id=?"

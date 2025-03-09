@@ -4,6 +4,7 @@ import com.aslanjavasky.shawarmadelviry.domain.model.IUser
 import com.aslanjavasky.shawarmadelviry.domain.model.User
 import com.aslanjavasky.shawarmadelviry.domain.repo.UserRepo
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import java.sql.SQLException
 import java.sql.Statement
 import javax.sql.DataSource
@@ -12,6 +13,8 @@ import javax.sql.DataSource
 class UserRepoImpl(
     private val dataSource: DataSource
 ) : UserRepo {
+
+    @Transactional
     override fun saveUser(user: IUser): IUser {
 
         val sql = "INSERT INTO users(name, email, password, telegram, phone, address) VALUES(?,?,?,?,?,?)"
@@ -37,6 +40,7 @@ class UserRepoImpl(
         }
     }
 
+    @Transactional
     override fun deleteUser(user: IUser) {
         val sql = "DELETE FROM users WHERE id=?"
         dataSource.connection.use { connection ->
@@ -50,6 +54,7 @@ class UserRepoImpl(
         }
     }
 
+    @Transactional
     override fun deleteUserByEmail(email: String) {
         val sql = "DELETE FROM users WHERE email = ? "
         dataSource.connection.use { connection ->
@@ -61,6 +66,7 @@ class UserRepoImpl(
         }
     }
 
+    @Transactional
     override fun updateUser(user: IUser): IUser {
 
         val sql = "UPDATE users SET name=?, email=?, password=?, telegram=?, phone=?, address=? WHERE id=?"
@@ -83,6 +89,7 @@ class UserRepoImpl(
     }
 
 
+    @Transactional
     override fun getUserByEmail(email: String): IUser? {
         val sql = "SELECT * FROM users WHERE email=?"
         return dataSource.connection.use { connection ->
@@ -105,6 +112,7 @@ class UserRepoImpl(
         }
     }
 
+    @Transactional
     fun getUserById(userId: Long): IUser {
         val sql = "SELECT * FROM users WHERE id=?"
         return dataSource.connection.use { connection ->

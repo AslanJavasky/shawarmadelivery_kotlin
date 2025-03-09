@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import java.sql.ResultSet
 import java.sql.SQLException
 import java.sql.Timestamp
@@ -20,6 +21,7 @@ class OrderRepoImpl(
     private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate
 ) : OrderRepo {
 
+    @Transactional
     override fun saveOrder(order: IOrder): IOrder {
         val sqlOrder = "INSERT INTO orders(date_time, status, user_id, total_price) " +
                 "VALUES( :date_time, :status, :user_id, :total_price);"
@@ -47,6 +49,7 @@ class OrderRepoImpl(
     }
 
 
+    @Transactional
     override fun updateOrder(order: IOrder): IOrder {
         val sql = "UPDATE orders SET date_time = :date_time, status = :status, " +
                 "user_id = :user_id, total_price = :total_price WHERE id = :id"
@@ -63,6 +66,7 @@ class OrderRepoImpl(
         return order
     }
 
+    @Transactional
     override fun getOrdersByUser(user: IUser): List<IOrder> {
 
         val sql = """
@@ -113,6 +117,7 @@ class OrderRepoImpl(
     }
 
 
+    @Transactional
     override fun getOrdersByStatus(orderStatus: OrderStatus): List<IOrder> {
 
         val sql = """

@@ -7,20 +7,25 @@ import com.aslanjavasky.shawarmadelviry.domain.model.IDelivery
 import com.aslanjavasky.shawarmadelviry.domain.repo.DeliveryRepo
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component("DeliveryRepoAdapter_CRUD")
 class DeliveryRepoAdapter(
     @Qualifier("DeliveryRepoExtCrudRepo") private val deliveryRepository: DeliveryRepository,
     @Qualifier("OrderRepoAdapter_CRUD") private val orderRepoAdapter: OrderRepoAdapter,
 ) : DeliveryRepo {
+
+    @Transactional
     override fun saveDelivery(delivery: IDelivery): IDelivery {
         return deliveryRepository.save(delivery.toDeliveryEntity()).toIDelivery(delivery.order!!)
     }
 
+    @Transactional
     override fun updateDelivery(delivery: IDelivery): IDelivery {
         return deliveryRepository.save(delivery.toDeliveryEntity()).toIDelivery(delivery.order!!)
     }
 
+    @Transactional
     override fun getDeliveryById(id: Long): IDelivery? {
         val deliveryEntity = deliveryRepository.findById(id)
             .orElseThrow { RuntimeException("Delivery not found with id: $id") }

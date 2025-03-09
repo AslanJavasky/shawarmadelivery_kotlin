@@ -20,6 +20,7 @@ class OrderRepoAdapter(
 ) : OrderRepo {
 
 
+    @Transactional
     override fun saveOrder(order: IOrder): IOrder {
 
         val orderEntity = order.toOrderEntity()
@@ -40,6 +41,7 @@ class OrderRepoAdapter(
         return orderRepository.save(orderEntity).toIOrder()
     }
 
+    @Transactional
     override fun updateOrder(order: IOrder): IOrder {
         val existingOrderEntity = orderRepository.findById(order.id!!)
             .orElseThrow { RuntimeException("Order not found with id: ${order.id!!}") }
@@ -47,10 +49,12 @@ class OrderRepoAdapter(
     }
 
 
+    @Transactional
     override fun getOrdersByStatus(orderStatus: OrderStatus): List<IOrder> {
         return orderRepository.findByStatusOrderByDateTimeDesc(orderStatus).map { it.toIOrder() }
     }
 
+    @Transactional
     override fun updateOrderStatus(orderId: Long, status: OrderStatus): IOrder {
         val orderEntity = orderRepository.findById(orderId)
             .orElseThrow { RuntimeException("Order not found with id : $orderId") }
@@ -58,10 +62,12 @@ class OrderRepoAdapter(
         return orderRepository.save(orderEntity).toIOrder()
     }
 
+    @Transactional
     override fun getOrdersByUser(user: IUser): List<IOrder> {
         return orderRepository.findByUser(user.toUserEntity()).map { it.toIOrder() }
     }
 
+    @Transactional
     fun getIOrderById(orderId: Long): IOrder {
         val orderEntity = orderRepository.findById(orderId)
             .orElseThrow { RuntimeException("Order not found with id : $orderId") }

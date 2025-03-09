@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.PreparedStatementCreator
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import java.sql.SQLException
 import java.sql.Statement
 import javax.sql.DataSource
@@ -17,6 +18,8 @@ import javax.sql.DataSource
 class MenuItemRepoImpl(
     private val jdbcTemplate: JdbcTemplate
 ) : MenuItemRepo {
+
+    @Transactional
     override fun saveMenuItem(menuItem: IMenuItem): IMenuItem {
         val sql = ("INSERT INTO menu_items (id, name, menu_section, price) VALUES(?,?,?,?) " +
                 "ON CONFLICT (id) DO " +
@@ -34,6 +37,7 @@ class MenuItemRepoImpl(
         return menuItem
     }
 
+    @Transactional
     override fun updateMenuItem(menuItem: IMenuItem): IMenuItem {
         val sql = "UPDATE menu_items SET name=?, menu_section=?, price=? WHERE id=?;"
         val affectedRow =
@@ -54,6 +58,7 @@ class MenuItemRepoImpl(
         }, id)[0] ?: null
     }
 
+    @Transactional
     override fun getMenuItemsBySection(section: MenuSection): List<IMenuItem> {
         val sql = "SELECT * FROM menu_items WHERE menu_section = ?"
         return jdbcTemplate.query(sql,  { rs, _ ->
@@ -66,6 +71,7 @@ class MenuItemRepoImpl(
         }, section.name)
     }
 
+    @Transactional
     override fun deleteMenuItem(menuItem: IMenuItem) {
         val sql = "DELETE FROM menu_items WHERE id=?"
         val affectedRow = jdbcTemplate.update(sql, menuItem.id)
@@ -77,6 +83,7 @@ class MenuItemRepoImpl(
 //        if (affectedRow == 0) throw RuntimeException("Failed to delete menu item, no rows affected")
     }
 
+    @Transactional
     override fun deleteAll() {
         val sql = "DELETE FROM menu_items"
         jdbcTemplate.update(sql)

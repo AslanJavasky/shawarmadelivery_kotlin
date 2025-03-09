@@ -15,26 +15,32 @@ class MenuItemRepoAdapter(
 ) : MenuItemRepo {
 
 
+    @Transactional
     override fun saveMenuItem(menuItem: IMenuItem): IMenuItem {
             return repo.save(menuItem.toMenuItemEntity()).toIMenuItem()
     }
 
+    @Transactional
     override fun updateMenuItem(menuItem: IMenuItem): IMenuItem {
         return repo.save(menuItem.toMenuItemEntity()).toIMenuItem()
     }
 
+    @Transactional
     override fun getMenuItemById(id: Long): IMenuItem? {
         return repo.findById(id).map { it.toIMenuItem() }.orElse(null)
     }
 
+    @Transactional
     override fun getMenuItemsBySection(section: MenuSection): List<IMenuItem> {
         return repo.findByMenuSection(section).map { it.toIMenuItem() }
     }
 
+    @Transactional
     override fun deleteMenuItem(menuItem: IMenuItem) {
         repo.delete(menuItem.toMenuItemEntity())
     }
 
+    @Transactional
     override fun deleteAll() {
         repo.deleteAll()
     }

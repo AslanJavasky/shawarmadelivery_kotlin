@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.PreparedStatementCreator
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import java.sql.Connection
 import java.sql.SQLException
 import java.sql.Statement
@@ -17,6 +18,8 @@ import javax.sql.DataSource
 class UserRepoImpl(
     private val jdbcTemplate: JdbcTemplate
 ) : UserRepo {
+
+    @Transactional
     override fun saveUser(user: IUser): IUser {
 
         val sql = "INSERT INTO users(name, email, password, telegram, phone, address) VALUES(?,?,?,?,?,?)"
@@ -37,6 +40,7 @@ class UserRepoImpl(
         return user
     }
 
+    @Transactional
     override fun deleteUser(user: IUser) {
         val sql = "DELETE FROM users WHERE id=?"
 
@@ -46,6 +50,7 @@ class UserRepoImpl(
     }
 
 
+    @Transactional
     override fun deleteUserByEmail(email: String) {
         val sql = "DELETE FROM users WHERE email = ? "
         val affectedRow = jdbcTemplate.update(sql, email)
@@ -53,6 +58,7 @@ class UserRepoImpl(
     }
 
 
+    @Transactional
     override fun updateUser(user: IUser): IUser {
 
         val sql = "UPDATE users SET name=?, email=?, password=?, telegram=?, phone=?, address=? WHERE id=?"
@@ -65,6 +71,7 @@ class UserRepoImpl(
     }
 
 
+    @Transactional
     override fun getUserByEmail(email: String): IUser? {
         val sql = "SELECT * FROM users WHERE email=?"
 
@@ -85,6 +92,7 @@ class UserRepoImpl(
     }
 
 
+    @Transactional
     fun getUserById(id: Long): IUser? {
         val sql = "SELECT * FROM users WHERE id=?"
 

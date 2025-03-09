@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import java.sql.SQLException
 import java.sql.Statement
 import javax.sql.DataSource
@@ -21,6 +22,9 @@ import javax.sql.DataSource
 class MenuItemRepoImpl(
     private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate
 ) : MenuItemRepo {
+
+
+    @Transactional
     override fun saveMenuItem(menuItem: IMenuItem): IMenuItem {
         val sql = ("INSERT INTO menu_items (id, name, menu_section, price) " +
                 "VALUES(:id , :name, :menu_section, :price) " +
@@ -31,6 +35,7 @@ class MenuItemRepoImpl(
         return menuItem
     }
 
+    @Transactional
     override fun updateMenuItem(menuItem: IMenuItem): IMenuItem {
         val sql = "UPDATE menu_items SET name = :name, menu_section = :Menu_section, " +
                 "price = :price WHERE id = :id;"
@@ -40,6 +45,7 @@ class MenuItemRepoImpl(
         return menuItem
     }
 
+    @Transactional
     override fun getMenuItemById(id: Long): IMenuItem? {
         val sql = "SELECT * FROM menu_items WHERE id = :id;"
         return namedParameterJdbcTemplate.queryForObject(
@@ -49,6 +55,7 @@ class MenuItemRepoImpl(
         )
     }
 
+    @Transactional
     override fun getMenuItemsBySection(section: MenuSection): List<IMenuItem> {
         val sql = "SELECT * FROM menu_items WHERE menu_section = :menu_section"
         return namedParameterJdbcTemplate.query(
@@ -58,6 +65,7 @@ class MenuItemRepoImpl(
         )
     }
 
+    @Transactional
     override fun deleteMenuItem(menuItem: IMenuItem) {
         val sql = "DELETE FROM menu_items WHERE id = :id"
         val affectedRow =
@@ -70,6 +78,7 @@ class MenuItemRepoImpl(
 //        if (affectedRow == 0) throw RuntimeException("Failed to delete menu item, no rows affected")
     }
 
+    @Transactional
     override fun deleteAll() {
         val sql = "DELETE FROM menu_items"
         val affectedRow = namedParameterJdbcTemplate.update(sql, emptyMap<String, Any>())

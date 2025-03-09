@@ -8,11 +8,14 @@ import com.aslanjavasky.shawarmadelviry.domain.model.MenuSection
 import com.aslanjavasky.shawarmadelviry.domain.repo.MenuItemRepo
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component("MenuItemRepoAdapter_CRUD")
 class MenuItemRepoAdapter(
     @Qualifier("MenuItemRepoExtCrudRepo") private val repo: MenuItemRepository
 ) : MenuItemRepo {
+
+    @Transactional
     override fun saveMenuItem(menuItem: IMenuItem): IMenuItem {
 
         return if (menuItem.id != null) {
@@ -34,22 +37,27 @@ class MenuItemRepoAdapter(
 
     }
 
+    @Transactional
     override fun updateMenuItem(menuItem: IMenuItem): IMenuItem {
         return repo.save(menuItem.toMenuItemEntity()).toIMenuItem()
     }
 
+    @Transactional
     override fun getMenuItemById(id: Long): IMenuItem? {
         return repo.findById(id).map { it.toIMenuItem() }.orElse(null)
     }
 
+    @Transactional
     override fun getMenuItemsBySection(section: MenuSection): List<IMenuItem> {
         return repo.getMenuItemsByMenuSection(section).map { it.toIMenuItem() }
     }
 
+    @Transactional
     override fun deleteMenuItem(menuItem: IMenuItem) {
         repo.delete(menuItem.toMenuItemEntity())
     }
 
+    @Transactional
     override fun deleteAll() {
         repo.deleteAll()
     }

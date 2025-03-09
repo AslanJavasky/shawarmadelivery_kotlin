@@ -5,6 +5,7 @@ import com.aslanjavasky.shawarmadelviry.domain.model.MenuItem
 import com.aslanjavasky.shawarmadelviry.domain.model.MenuSection
 import com.aslanjavasky.shawarmadelviry.domain.repo.MenuItemRepo
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import java.sql.SQLException
 import java.sql.Statement
 import javax.sql.DataSource
@@ -13,6 +14,8 @@ import javax.sql.DataSource
 class MenuItemRepoImpl(
     private val datasource: DataSource
 ) : MenuItemRepo {
+
+    @Transactional
     override fun saveMenuItem(menuItem: IMenuItem): IMenuItem {
         val sql = ("INSERT INTO menu_items (id, name, menu_section, price) VALUES(?,?,?,?) " +
                 "ON CONFLICT (id) DO " +
@@ -38,6 +41,7 @@ class MenuItemRepoImpl(
         return menuItem
     }
 
+    @Transactional
     override fun updateMenuItem(menuItem: IMenuItem): IMenuItem {
         val sql = "UPDATE menu_items SET name=?, menu_section=?, price=? WHERE id=?;"
         datasource.connection.use { connection ->
@@ -53,6 +57,7 @@ class MenuItemRepoImpl(
         return menuItem
     }
 
+    @Transactional
     override fun getMenuItemById(id: Long): IMenuItem? {
         val sql = "SELECT * FROM menu_items WHERE id=?;"
         return datasource.connection.use { connection ->
@@ -72,6 +77,7 @@ class MenuItemRepoImpl(
         }
     }
 
+    @Transactional
     override fun getMenuItemsBySection(section: MenuSection): List<IMenuItem> {
         val sql = "SELECT * FROM menu_items WHERE menu_section = ?"
         return datasource.connection.use { connection ->
@@ -93,6 +99,7 @@ class MenuItemRepoImpl(
         }
     }
 
+    @Transactional
     override fun deleteMenuItem(menuItem: IMenuItem) {
         val sql = "DELETE FROM menu_items WHERE id=?"
         datasource.connection.use { connection ->
@@ -105,6 +112,7 @@ class MenuItemRepoImpl(
         }
     }
 
+    @Transactional
     override fun deleteAll() {
         val sql = "DELETE FROM menu_items"
         datasource.connection.use { connection ->

@@ -7,6 +7,7 @@ import com.aslanjavasky.shawarmadelviry.data.repoImpls.starter_data_jpa.entity.t
 import com.aslanjavasky.shawarmadelviry.domain.model.IDelivery
 import com.aslanjavasky.shawarmadelviry.domain.repo.DeliveryRepo
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component("DeliveryRepoAdapter_JPA")
 class DeliveryRepoAdapter(
@@ -14,6 +15,7 @@ class DeliveryRepoAdapter(
     private val orderRepository: OrderJpaRepository,
 ) : DeliveryRepo {
 
+    @Transactional
     override fun saveDelivery(delivery: IDelivery): IDelivery {
 
         val deliveryEntity = delivery.toDeliveryEntity()
@@ -27,10 +29,12 @@ class DeliveryRepoAdapter(
         return deliveryRepository.save(deliveryEntity).toIDelivery()
     }
 
+    @Transactional
     override fun updateDelivery(delivery: IDelivery): IDelivery {
         return deliveryRepository.save(delivery.toDeliveryEntity()).toIDelivery()
     }
 
+    @Transactional
     override fun getDeliveryById(id: Long): IDelivery? {
         return deliveryRepository.findById(id)
             .orElseThrow { RuntimeException("Delivery not found with id: $id") }.toIDelivery()

@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import java.sql.ResultSet
 import java.sql.SQLException
 import java.sql.Timestamp
@@ -16,6 +17,9 @@ import java.sql.Timestamp
 class DeliveryRepoImpl(
     private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate,
 ) : DeliveryRepo {
+
+
+    @Transactional
     override fun saveDelivery(delivery: IDelivery): IDelivery {
         val sql =
             "INSERT INTO deliveries(address, phone, date_time, order_id) " +
@@ -31,6 +35,7 @@ class DeliveryRepoImpl(
         return delivery
     }
 
+    @Transactional
     override fun updateDelivery(delivery: IDelivery): IDelivery {
         val sql =
             "UPDATE deliveries SET address= :address , phone = :phone , " +
@@ -45,6 +50,7 @@ class DeliveryRepoImpl(
         return delivery
     }
 
+    @Transactional
     override fun getDeliveryById(id: Long): IDelivery? {
         val sql = """
                 SELECT 

@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.ResultSetExtractor
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import java.sql.ResultSet
 import java.sql.SQLException
 import java.sql.Timestamp
@@ -14,6 +15,9 @@ import java.sql.Timestamp
 class DeliveryRepoImpl(
     private val jdbcTemplate: JdbcTemplate,
 ) : DeliveryRepo {
+
+
+    @Transactional
     override fun saveDelivery(delivery: IDelivery): IDelivery {
         val sql = "INSERT INTO deliveries(address, phone, date_time, order_id) VALUES(?,?,?,?)"
 
@@ -31,6 +35,7 @@ class DeliveryRepoImpl(
         return delivery
     }
 
+    @Transactional
     override fun updateDelivery(delivery: IDelivery): IDelivery {
         val sql = "UPDATE deliveries SET address= ? , phone=? , date_time= ?, order_id=? WHERE id=?"
 
@@ -43,6 +48,7 @@ class DeliveryRepoImpl(
         return delivery
     }
 
+    @Transactional
     override fun getDeliveryById(id: Long): IDelivery? {
         val sql = """
                 SELECT 

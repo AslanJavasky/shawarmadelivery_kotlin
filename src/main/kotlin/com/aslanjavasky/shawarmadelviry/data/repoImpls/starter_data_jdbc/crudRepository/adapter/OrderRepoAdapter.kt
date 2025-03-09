@@ -14,6 +14,7 @@ import com.aslanjavasky.shawarmadelviry.domain.model.OrderStatus
 import com.aslanjavasky.shawarmadelviry.domain.repo.OrderRepo
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component("OrderRepoAdapter_CRUD")
 class OrderRepoAdapter(
@@ -22,12 +23,16 @@ class OrderRepoAdapter(
     @Qualifier("MenuItemRepoExtCrudRepo") private val menuItemRepository: MenuItemRepository
 
 ) : OrderRepo {
+
+
+    @Transactional
     override fun saveOrder(order: IOrder): IOrder {
         val savedOrder = orderRepository.save(order.toOrderEntity())
         order.itemList!!.forEach { orderRepository.insertToOrdersMenuItems(savedOrder.id!!, it.id!!) }
         return savedOrder.toIOrder(order.user!!, order.itemList!!)
     }
 
+    @Transactional
     override fun updateOrder(order: IOrder): IOrder {
         val existingOrderEntity = orderRepository.findById(order.id!!)
             .orElseThrow { RuntimeException("Order not found with id: ${order.id!!}") }
@@ -38,19 +43,23 @@ class OrderRepoAdapter(
     }
 
 
+    @Transactional
     override fun getOrdersByStatus(orderStatus: OrderStatus): List<IOrder> {
         return orderRepository.getOrdersByStatus(orderStatus).map { getIOrderById(it.id!!) }
     }
 
+    @Transactional
     override fun updateOrderStatus(orderId: Long, status: OrderStatus): IOrder {
         orderRepository.updateOrderStatus(orderId, status)
         return getIOrderById(orderId)
     }
 
+    @Transactional
     override fun getOrdersByUser(user: IUser): List<IOrder> {
         return orderRepository.getByUserId(user.id!!).map { getIOrderById(it.id!!, user) }
     }
 
+    @Transactional
     public fun getIOrderById(orderId: Long, user: IUser? = null): IOrder {
         val orderEntity = orderRepository.findById(orderId)
             .orElseThrow { RuntimeException("Order not found with id : $orderId") }

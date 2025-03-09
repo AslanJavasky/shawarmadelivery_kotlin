@@ -9,11 +9,14 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 
 @Repository("URwNPJT")
 class UserRepoImpl(
     private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate
 ) : UserRepo {
+
+    @Transactional
     override fun saveUser(user: IUser): IUser {
 
         val sql =
@@ -26,6 +29,7 @@ class UserRepoImpl(
         return user
     }
 
+    @Transactional
     override fun deleteUser(user: IUser) {
         val sql = "DELETE FROM users WHERE id = :id"
 
@@ -36,6 +40,7 @@ class UserRepoImpl(
     }
 
 
+    @Transactional
     override fun deleteUserByEmail(email: String) {
         val sql = "DELETE FROM users WHERE email = :email "
         val affectedRow = namedParameterJdbcTemplate.update(
@@ -44,6 +49,7 @@ class UserRepoImpl(
     }
 
 
+    @Transactional
     override fun updateUser(user: IUser): IUser {
 
         val sql = "UPDATE users SET name = :name, email = :email, password = :password, " +
@@ -57,6 +63,7 @@ class UserRepoImpl(
     }
 
 
+    @Transactional
     override fun getUserByEmail(email: String): IUser? {
         val sql = "SELECT * FROM users WHERE email = :email"
 
@@ -81,6 +88,7 @@ class UserRepoImpl(
     }
 
 
+    @Transactional
     fun getUserById(id: Long): IUser? {
         val sql = "SELECT * FROM users WHERE id = :id"
 

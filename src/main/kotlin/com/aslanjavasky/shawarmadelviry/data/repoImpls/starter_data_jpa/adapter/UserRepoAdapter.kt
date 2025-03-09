@@ -12,8 +12,11 @@ import org.springframework.transaction.annotation.Transactional
 class UserRepoAdapter (
     private val userRepository: UserJpaRepository
 ) : UserRepo {
+
+    @Transactional
     override fun saveUser(user: IUser) = userRepository.save(user.toUserEntity()).toIUser()
 
+    @Transactional
     override fun deleteUser(user: IUser) = userRepository.delete(user.toUserEntity())
 
     @Transactional
@@ -21,10 +24,13 @@ class UserRepoAdapter (
         userRepository.deleteByEmail(email)
     }
 
+    @Transactional
     override fun updateUser(user: IUser) = userRepository.save(user.toUserEntity()).toIUser()
 
+    @Transactional
     override fun getUserByEmail(email: String) = userRepository.findByEmail(email).toIUser()
 
+    @Transactional
     fun getUserById(id: Long) = userRepository.findById(id).map { it.toIUser() }.orElse(null)
 
 }

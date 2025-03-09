@@ -5,6 +5,7 @@ import com.aslanjavasky.shawarmadelviry.domain.model.IDelivery
 import com.aslanjavasky.shawarmadelviry.domain.repo.DeliveryRepo
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import java.sql.SQLException
 import java.sql.Statement
 import java.sql.Timestamp
@@ -15,6 +16,8 @@ class DeliveryRepoImpl(
     private val dataSource: DataSource,
     @Qualifier("ORwPS") private val orderRepoImpl: OrderRepoImpl
 ) : DeliveryRepo {
+
+    @Transactional
     override fun saveDelivery(delivery: IDelivery): IDelivery {
         val sql = "INSERT INTO deliveries(address, phone, date_time, order_id) VALUES(?,?,?,?)"
         dataSource.connection.use { connection ->
@@ -39,6 +42,7 @@ class DeliveryRepoImpl(
         return delivery
     }
 
+    @Transactional
     override fun updateDelivery(delivery: IDelivery): IDelivery {
         val sql = "UPDATE deliveries SET address= ? , phone=? , date_time= ?, order_id=? WHERE id=?"
         dataSource.connection.use { connection ->
@@ -56,6 +60,7 @@ class DeliveryRepoImpl(
         return delivery
     }
 
+    @Transactional
     override fun getDeliveryById(id: Long): IDelivery? {
         val sql = "SELECT * FROM deliveries WHERE id=?"
         dataSource.connection.use { connection ->

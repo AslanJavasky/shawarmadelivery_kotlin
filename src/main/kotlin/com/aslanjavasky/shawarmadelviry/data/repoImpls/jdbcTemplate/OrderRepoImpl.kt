@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator
 import org.springframework.jdbc.core.ResultSetExtractor
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import java.sql.ResultSet
 import java.sql.SQLException
 import java.sql.Timestamp
@@ -20,6 +21,7 @@ class OrderRepoImpl(
     @Qualifier("URwJT") private val userRepoImpl: UserRepoImpl,
 ) : OrderRepo {
 
+    @Transactional
     override fun saveOrder(order: IOrder): IOrder {
         val sqlOrder = "INSERT INTO orders(date_time, status, user_id, total_price) VALUES(?,?,?,?);"
         val sqlOrderMenuitems = "INSERT INTO orders_menu_items(order_id, menu_item_id) VALUES(?,?);"
@@ -43,6 +45,7 @@ class OrderRepoImpl(
     }
 
 
+    @Transactional
     override fun updateOrder(order: IOrder): IOrder {
         val sql = "UPDATE orders SET date_time=?, status=?, user_id=?, total_price=?  WHERE id=?"
 
@@ -58,6 +61,7 @@ class OrderRepoImpl(
         return order
     }
 
+    @Transactional
     override fun getOrdersByUser(user: IUser): List<IOrder> {
 
         val sql = """
@@ -110,6 +114,7 @@ class OrderRepoImpl(
     }
 
 
+    @Transactional
     override fun getOrdersByStatus(orderStatus: OrderStatus): List<IOrder> {
 
         val sql = """
