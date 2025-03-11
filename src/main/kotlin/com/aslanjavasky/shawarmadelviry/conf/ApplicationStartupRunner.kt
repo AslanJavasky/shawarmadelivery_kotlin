@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 
-@Component
+//@Component
 class ApplicationStartupRunner(
     @Qualifier("MenuItemRepoAdapter_JPA") private val menuItemRepo: MenuItemRepo
 ) : CommandLineRunner {

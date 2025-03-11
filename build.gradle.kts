@@ -7,7 +7,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
 //    id("nu.studer.jooq") version "9.0"
     id("java")
-    id("org.liquibase.gradle") version "2.1.1"
+//    id("org.liquibase.gradle") version "2.1.1"
 }
 
 group = "com.aslanjavasky"
@@ -38,7 +38,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-jooq")
-    implementation("org.liquibase:liquibase-core:4.31.1")
+//    implementation("org.liquibase:liquibase-core:4.31.1")
+    implementation("org.flywaydb:flyway-core:9.22.3")
 //    implementation("org.liquibase.gradle:org.liquibase.gradle.gradle.plugin:2.1.1")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("io.github.microutils:kotlin-logging:3.0.5")
