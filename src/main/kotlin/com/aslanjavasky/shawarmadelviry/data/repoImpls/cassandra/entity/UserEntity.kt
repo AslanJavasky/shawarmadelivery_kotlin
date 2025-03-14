@@ -9,6 +9,7 @@ import java.util.*
 
 @Table("users")
 data class UserEntity(
+
     @PrimaryKey
     var id: UUID? = UUID.randomUUID(),
 
@@ -35,7 +36,7 @@ data class UserEntity(
 )
 
 fun IUser.toUserEntity() = UserEntity(
-    id = this.id,
+    id = if (this.id == null) UUID.randomUUID() else UUID(this.id!!, (this.id!! shl 32) or (this.id!! ushr 32)),
     name = this.name!!,
     email = this.email!!,
     password = this.password!!,
@@ -45,7 +46,7 @@ fun IUser.toUserEntity() = UserEntity(
 )
 
 fun UserEntity.toIUser() = User(
-    id = this.id,
+    id = this.id!!.mostSignificantBits,
     name = this.name,
     email = this.email,
     password = this.password,
