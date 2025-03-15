@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 import java.math.BigDecimal
 import java.time.LocalDateTime
+import java.util.*
 
 @Table("orders")
 class OrderEntity(
@@ -32,3 +33,4 @@ fun OrderEntity.toIOrder(iuser: IUser, items: MutableList<IMenuItem>) = Order(
     itemList = items,
     totalPrice = this.totalPrice!!
 )
+

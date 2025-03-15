@@ -36,7 +36,7 @@ data class UserEntity(
 )
 
 fun IUser.toUserEntity() = UserEntity(
-    id = if (this.id == null) UUID.randomUUID() else UUID(this.id!!, (this.id!! shl 32) or (this.id!! ushr 32)),
+    id = if (this.id==null) UUID.randomUUID() else this.id!!.getUUIDFromLong() ,
     name = this.name!!,
     email = this.email!!,
     password = this.password!!,
@@ -54,3 +54,9 @@ fun UserEntity.toIUser() = User(
     telegram = this.telegram,
     address = this.address,
 )
+
+fun Long.getUUIDFromLong(): UUID {
+    val mostSignBit: Long = this
+    val leastSignBit: Long = (this shl 32) or (this ushr 32)
+    return UUID(mostSignBit, leastSignBit)
+}

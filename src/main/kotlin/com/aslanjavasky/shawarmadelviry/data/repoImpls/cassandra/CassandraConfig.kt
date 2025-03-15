@@ -6,10 +6,21 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.cassandra.config.AbstractCassandraConfiguration
 import org.springframework.data.cassandra.config.CqlSessionFactoryBean
 import org.springframework.data.cassandra.config.SchemaAction
+import org.springframework.data.cassandra.core.CassandraTemplate
+import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories
 
 
 @Configuration
-class CassandraConfig : AbstractCassandraConfiguration() {
+//@EnableCassandraRepositories
+class CassandraConfig (
+//    private val template:CassandraTemplate
+): AbstractCassandraConfiguration() {
+
+//    @Bean
+//    fun createIndexes(): Boolean {
+//        val cql="CREATE INDEX ON users(email)"
+//        return template.cqlOperations.execute(cql)
+//    }
 
     @Value("\${spring.data.cassandra.keyspace-name}")
     private lateinit var keyspaceName: String
@@ -18,7 +29,7 @@ class CassandraConfig : AbstractCassandraConfiguration() {
     private lateinit var contactPoints: String
 
     @Value("\${spring.data.cassandra.port}")
-    private var port: Int = 9042
+    private var port: Int = 2
 
     @Value("\${spring.data.cassandra.username}")
     private lateinit var username: String
@@ -41,10 +52,10 @@ class CassandraConfig : AbstractCassandraConfiguration() {
 //    override fun getContactPoints(): String {
 //        return contactPoints
 //    }
-//
-//    override fun getPort(): Int {
-//        return port
-//    }
+
+    override fun getPort(): Int {
+        return port
+    }
 
     override fun getSchemaAction(): SchemaAction {
         return SchemaAction.CREATE_IF_NOT_EXISTS
@@ -55,10 +66,10 @@ class CassandraConfig : AbstractCassandraConfiguration() {
 //        val session = CqlSessionFactoryBean()
 //        session.setContactPoints(getContactPoints())
 //        session.setKeyspaceName(getKeyspaceName())
-//        session.setPort(getPort())
+//        session.setPort(port)
 //        session.setUsername(username)
 //        session.setPassword(password)
-//        session.setLocalDatacenter(getLocalDataCenter())
+//        session.setLocalDatacenter(datacenter)
 //        return session
 //    }
 

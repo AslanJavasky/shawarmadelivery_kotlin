@@ -17,7 +17,7 @@ data class MenuItemEntity(
     @Column
     var name: String = "",
 
-    @Column("menu_section")
+    @Column
     var menuSection: MenuSection = MenuSection.MAIN_MENU,
 
     @Column

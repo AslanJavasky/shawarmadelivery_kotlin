@@ -12,7 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-@Entity(name = "menu_items")
+//@Entity(name = "menu_items")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 data class MenuItemEntity(

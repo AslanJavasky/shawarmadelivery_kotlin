@@ -4,7 +4,7 @@ import com.aslanjavasky.shawarmadelviry.data.repoImpls.cassandra.entity.UserEnti
 import org.springframework.data.cassandra.repository.CassandraRepository
 import org.springframework.data.cassandra.repository.Query
 import org.springframework.stereotype.Repository
-import java.util.*
+import java.util.UUID
 
 @Repository
 interface UserCassandraRepository : CassandraRepository<UserEntity, UUID> {

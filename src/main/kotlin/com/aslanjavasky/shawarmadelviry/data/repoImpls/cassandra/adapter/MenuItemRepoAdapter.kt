@@ -8,7 +8,7 @@ import com.aslanjavasky.shawarmadelviry.domain.model.MenuSection
 import com.aslanjavasky.shawarmadelviry.domain.repo.MenuItemRepo
 import org.springframework.stereotype.Component
 
-@Component("MenuItemRepoAdapter_Cassandra")
+//@Component("MenuItemRepoAdapter_Cassandra")
 class MenuItemRepoAdapter(
     private val repo: MenuItemCassandraRepository
 ) : MenuItemRepo {
