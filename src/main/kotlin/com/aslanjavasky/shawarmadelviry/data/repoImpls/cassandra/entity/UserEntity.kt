@@ -13,30 +13,27 @@ data class UserEntity(
     @PrimaryKey
     var id: UUID? = UUID.randomUUID(),
 
-    @Column
+//    @Column
     var name: String = "",
 
-    @Column
+//    @Column
     var email: String = "",
 
-    @Column
+//    @Column
     var password: String = "",
 
-    @Column
+//    @Column
     var telegram: String? = null,
 
-    @Column
+//    @Column
     var phone: String? = null,
 
-    @Column
-    var address: String? = null,
-
-    @Column("order_ids")
-    var orders: List<UUID> = emptyList(),
+//    @Column
+    var address: String? = null
 )
 
 fun IUser.toUserEntity() = UserEntity(
-    id = if (this.id==null) UUID.randomUUID() else this.id!!.getUUIDFromLong() ,
+    id = this.id.getUUIDFromLong(),
     name = this.name!!,
     email = this.email!!,
     password = this.password!!,
@@ -55,8 +52,14 @@ fun UserEntity.toIUser() = User(
     address = this.address,
 )
 
-fun Long.getUUIDFromLong(): UUID {
-    val mostSignBit: Long = this
-    val leastSignBit: Long = (this shl 32) or (this ushr 32)
-    return UUID(mostSignBit, leastSignBit)
+fun Long?.getUUIDFromLong(): UUID {
+    return if (this == null) {
+        UUID(Random().nextLong(), 0)
+    }else {
+        UUID(this, 0)
+    }
+}
+
+fun UUID.getLongFromUUID(): Long {
+    return this.mostSignificantBits
 }

@@ -8,6 +8,6 @@ import java.util.UUID
 
 @Repository
 interface UserCassandraRepository : CassandraRepository<UserEntity, UUID> {
-    @Query("SELECT * FROM users WHERE email=?0 ALLOW FILTERING")
+    @Query("SELECT * FROM users WHERE email = ?0 ALLOW FILTERING")
     fun findByEmail(email: String):UserEntity?
 }

@@ -1,16 +1,16 @@
 package com.aslanjavasky.shawarmadelviry.data.repoImpls.cassandra.adapter
 
 import com.aslanjavasky.shawarmadelviry.data.repoImpls.cassandra.UserCassandraRepository
+import com.aslanjavasky.shawarmadelviry.data.repoImpls.cassandra.entity.UserEntity
 import com.aslanjavasky.shawarmadelviry.data.repoImpls.cassandra.entity.toIUser
 import com.aslanjavasky.shawarmadelviry.data.repoImpls.cassandra.entity.toUserEntity
 import com.aslanjavasky.shawarmadelviry.domain.model.IUser
 import com.aslanjavasky.shawarmadelviry.domain.repo.UserRepo
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.UUID
 
 @Component("UserRepoAdapter_Cassandra")
-class UserRepoAdapter (
+class UserRepoAdapter(
     private val userRepository: UserCassandraRepository
 ) : UserRepo {
 
@@ -23,8 +23,9 @@ class UserRepoAdapter (
     }
 
     override fun deleteUserByEmail(email: String) {
-        val userEntity = userRepository.findByEmail(email)
-        if (userEntity != null) userRepository.delete(userEntity)
+        val userEntity: UserEntity? = findUserByEmail(email)
+        userEntity?.let { userRepository.delete(it) } ?: throw RuntimeException("User not found with email:$email")
+
     }
 
     override fun updateUser(user: IUser): IUser {
@@ -33,8 +34,12 @@ class UserRepoAdapter (
 
     override fun getUserByEmail(email: String): IUser? {
         val userEntity = userRepository.findByEmail(email)
-        return userEntity?.toIUser() ?: null
+        return userEntity?.let { it.toIUser() } ?: throw RuntimeException("User not found with email:$email")
+
     }
 
-    fun getUserById(uuid: UUID) = userRepository.findById(uuid).orElse(null)
+    private fun findUserByEmail(email: String): UserEntity? = userRepository.findByEmail(email)
+
+
+    fun getUserById(uuid: UUID): IUser? = userRepository.findById(uuid).orElse(null)?.toIUser()
 }

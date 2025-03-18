@@ -6,12 +6,11 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.cassandra.config.AbstractCassandraConfiguration
 import org.springframework.data.cassandra.config.CqlSessionFactoryBean
 import org.springframework.data.cassandra.config.SchemaAction
-import org.springframework.data.cassandra.core.CassandraTemplate
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories
 
 
 @Configuration
-//@EnableCassandraRepositories
+@EnableCassandraRepositories
 class CassandraConfig (
 //    private val template:CassandraTemplate
 ): AbstractCassandraConfiguration() {
@@ -37,21 +36,21 @@ class CassandraConfig (
     @Value("\${spring.data.cassandra.password}")
     private lateinit var password: String
 
-    @Value("\${spring.data.cassandra.local-datacenter")
+    @Value("\${spring.data.cassandra.local-datacenter}")
     private lateinit var datacenter: String
 
 
-//    override fun getLocalDataCenter(): String? {
-//        return datacenter
-//    }
+    override fun getLocalDataCenter(): String? {
+        return datacenter
+    }
 
     override fun getKeyspaceName(): String {
         return keyspaceName
     }
 
-//    override fun getContactPoints(): String {
-//        return contactPoints
-//    }
+    override fun getContactPoints(): String {
+        return contactPoints
+    }
 
     override fun getPort(): Int {
         return port
@@ -61,16 +60,16 @@ class CassandraConfig (
         return SchemaAction.CREATE_IF_NOT_EXISTS
     }
 
-//    @Bean
-//    override fun cassandraSession(): CqlSessionFactoryBean {
-//        val session = CqlSessionFactoryBean()
-//        session.setContactPoints(getContactPoints())
-//        session.setKeyspaceName(getKeyspaceName())
-//        session.setPort(port)
-//        session.setUsername(username)
-//        session.setPassword(password)
-//        session.setLocalDatacenter(datacenter)
-//        return session
-//    }
+    @Bean
+    override fun cassandraSession(): CqlSessionFactoryBean {
+        val session = CqlSessionFactoryBean()
+        session.setContactPoints(getContactPoints())
+        session.setKeyspaceName(getKeyspaceName())
+        session.setPort(port)
+        session.setUsername(username)
+        session.setPassword(password)
+        session.setLocalDatacenter(datacenter)
+        return session
+    }
 
 }

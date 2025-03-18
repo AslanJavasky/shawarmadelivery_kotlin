@@ -8,6 +8,6 @@ import java.util.*
 
 //@Repository
 interface MenuItemCassandraRepository : CassandraRepository<MenuItemEntity, UUID>{
-    @Query("SELECT * FROM menu_items WHERE menusection=?0 ALLOW FILTERING")
+    @Query("SELECT * FROM menu_items WHERE menusection = ?0 ALLOW FILTERING")
     fun findByMenuSection(section: MenuSection): List<MenuItemEntity>
 }

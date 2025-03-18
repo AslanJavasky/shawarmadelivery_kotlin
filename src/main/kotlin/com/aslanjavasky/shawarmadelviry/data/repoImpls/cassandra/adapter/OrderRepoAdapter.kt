@@ -27,11 +27,11 @@ class OrderRepoAdapter(
 
     override fun updateOrder(order: IOrder): IOrder {
         val orderEntityForSaving = order.toOrderEntity()
-        val existingOrderEntity = orderRepository.findById(orderEntityForSaving.id!!)
-            .orElseThrow { RuntimeException("Order not found with id: ${order.id!!}") }
+        val existingOrderEntity = getOrderEntityById(orderEntityForSaving.id!!)
         val savedOrder = orderRepository.save(orderEntityForSaving)
-        return getIOrderById(orderEntityForSaving.id!!)
+        return getIOrderById(savedOrder.id!!)
     }
+
 
     override fun getOrdersByStatus(orderStatus: OrderStatus): List<IOrder> {
         val ordersEntities = orderRepository.findByStatus(orderStatus)
@@ -39,10 +39,9 @@ class OrderRepoAdapter(
     }
 
     override fun updateOrderStatus(orderId: Long, status: OrderStatus): IOrder {
-        val orderEntity = orderRepository.findById(orderId.getUUIDFromLong())
-            .orElseThrow { RuntimeException("Order not found with id : $orderId") }
-        orderEntity.status=status
-        val savedOrder=orderRepository.save(orderEntity)
+        val orderEntity = getOrderEntityById(orderId.getUUIDFromLong())
+        orderEntity!!.status = status
+        val savedOrder = orderRepository.save(orderEntity)
         return getIOrderById(savedOrder.id!!)
     }
 
@@ -53,7 +52,7 @@ class OrderRepoAdapter(
     }
 
 
-    public fun getIOrderById(orderId: UUID): IOrder {
+    fun getIOrderById(orderId: UUID): IOrder {
         val orderEntity = orderRepository.findById(orderId)
             .orElseThrow { RuntimeException("Order not found with id : $orderId") }
 
@@ -70,6 +69,9 @@ class OrderRepoAdapter(
             }
         return orderEntity.toIOrder(userResult, menuItems.toMutableList())
     }
+
+    private fun getOrderEntityById(id: UUID): OrderEntity? =
+        orderRepository.findById(id).orElseThrow { RuntimeException("Order not found with id: $id") }
 
 
 }

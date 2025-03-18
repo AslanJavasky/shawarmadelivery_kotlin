@@ -13,37 +13,39 @@ data class OrderEntity(
     @PrimaryKey
     var id: UUID? = UUID.randomUUID(),
 
-    @Column("date_time")
+//    @Column
     var dateTime: LocalDateTime = LocalDateTime.now(),
 
-    @Column
+//    @Column
     var status: OrderStatus = OrderStatus.NEW,
 
-    @Column("user_id")
-    var userId: UUID ,
+//    @Column
+    var userId: UUID,
 
-    @Column("total_price")
+//    @Column
     var totalPrice: BigDecimal = BigDecimal.ZERO,
 
-    @Column("menu_items")
+//    @Column
     var menuItemsIds: MutableList<UUID>? = mutableListOf()
 )
 
 fun IOrder.toOrderEntity() = OrderEntity(
-    id = if(this.id == null) UUID.randomUUID() else this.id!!.getUUIDFromLong(),
+    id = this.id.getUUIDFromLong(),
     dateTime = this.dateTime!!,
     status = this.status!!,
     userId = this.user!!.id!!.getUUIDFromLong(),
-    totalPrice = this.totalPrice!!
+    totalPrice = this.totalPrice!!,
+    menuItemsIds = this.itemList?.map { it.id.getUUIDFromLong() }?.toMutableList()
+
 )
 
 fun OrderEntity.toIOrder(iuser: IUser, items: MutableList<IMenuItem>) = Order(
-    id = this.id!!.mostSignificantBits,
-    dateTime = this.dateTime!!,
-    status = this.status!!,
+    id = this.id!!.getLongFromUUID(),
+    dateTime = this.dateTime,
+    status = this.status,
     user = iuser,
     itemList = items,
-    totalPrice = this.totalPrice!!
+    totalPrice = this.totalPrice
 )
 
 

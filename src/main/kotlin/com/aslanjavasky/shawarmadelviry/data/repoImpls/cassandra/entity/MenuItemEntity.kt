@@ -14,26 +14,26 @@ data class MenuItemEntity(
     @PrimaryKey
     var id: UUID? = UUID.randomUUID(),
 
-    @Column
+//    @Column
     var name: String = "",
 
-    @Column
+//    @Column
     var menuSection: MenuSection = MenuSection.MAIN_MENU,
 
-    @Column
+//    @Column
     var price: BigDecimal = BigDecimal.ZERO
 
 )
 
 fun IMenuItem.toMenuItemEntity() = MenuItemEntity(
-    id = if (this.id == null) UUID.randomUUID() else UUID(this.id!!, (this.id!! shl 32) or (this.id!! ushr 32)),
+    id = this.id.getUUIDFromLong(),
     name = this.name,
     menuSection = this.menuSection,
     price = this.price
 )
 
 fun MenuItemEntity.toIMenuItem() = MenuItem(
-    id = this.id!!.mostSignificantBits,
+    id = this.id!!.getLongFromUUID(),
     name = this.name,
     menuSection = this.menuSection,
     price = this.price
