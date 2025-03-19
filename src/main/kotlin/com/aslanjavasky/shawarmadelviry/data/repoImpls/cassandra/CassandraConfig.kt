@@ -9,8 +9,8 @@ import org.springframework.data.cassandra.config.SchemaAction
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories
 
 
-@Configuration
-@EnableCassandraRepositories
+//@Configuration
+//@EnableCassandraRepositories
 class CassandraConfig (
 //    private val template:CassandraTemplate
 ): AbstractCassandraConfiguration() {
