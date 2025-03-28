@@ -7,5 +7,5 @@ import org.springframework.stereotype.Service
 
 @Service
 class UserService(
-    @Qualifier("UserRepoAdapter_Mongo") repo: UserRepo
+    @Qualifier("UserRepoAdapter_Redis") repo: UserRepo
 ) : UserInterractor(repo)

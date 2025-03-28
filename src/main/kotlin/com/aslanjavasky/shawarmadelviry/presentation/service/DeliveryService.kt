@@ -7,5 +7,5 @@ import org.springframework.stereotype.Service
 
 @Service
 class DeliveryService(
-    @Qualifier("DeliveryRepoAdapter_MongoDB") private val deliveryRepo: DeliveryRepo
+    @Qualifier("DeliveryRepoAdapter_Redis") private val deliveryRepo: DeliveryRepo
 ) : DeliveryInterractor(deliveryRepo)

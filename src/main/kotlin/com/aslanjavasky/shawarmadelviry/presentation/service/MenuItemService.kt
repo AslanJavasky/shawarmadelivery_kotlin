@@ -7,6 +7,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class MenuItemService(
-    @Qualifier("MenuItemRepoAdapter_MongoDB") private val repo: MenuItemRepo
+    @Qualifier("MenuItemRepoAdapter_Redis") private val repo: MenuItemRepo
 ) : MenuItemInterractor(repo) {
 }
