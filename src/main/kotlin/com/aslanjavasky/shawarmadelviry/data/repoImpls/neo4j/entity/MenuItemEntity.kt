@@ -1,5 +1,7 @@
 package com.aslanjavasky.shawarmadelviry.data.repoImpls.neo4j.entity
 
+import com.aslanjavasky.shawarmadelviry.domain.model.IMenuItem
+import com.aslanjavasky.shawarmadelviry.domain.model.MenuItem
 import com.aslanjavasky.shawarmadelviry.domain.model.MenuSection
 import org.springframework.data.annotation.Id
 import org.springframework.data.neo4j.core.schema.Node
@@ -16,16 +18,16 @@ data class MenuItemEntity(
 )
 
 
-//fun IMenuItem.toMenuItemEntity() = MenuItemEntity(
-//    id = this.id.getUUIDFromLong(),
-//    name = this.name,
-//    menuSection = this.menuSection,
-//    price = this.price
-//)
-//
-//fun MenuItemEntity.toIMenuItem() = MenuItem(
-//    id = this.id!!.getLongFromUUID(),
-//    name = this.name,
-//    menuSection = this.menuSection,
-//    price = this.price
-//)
+fun IMenuItem.toMenuItemEntity() = MenuItemEntity(
+    id = this.id.getUUIDFromLong(),
+    name = this.name,
+    menuSection = this.menuSection,
+    price = this.price
+)
+
+fun MenuItemEntity.toIMenuItem() = MenuItem(
+    id = this.id!!.getLongFromUUID(),
+    name = this.name,
+    menuSection = this.menuSection,
+    price = this.price
+)

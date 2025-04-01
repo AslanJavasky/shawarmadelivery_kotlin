@@ -15,31 +15,31 @@ data class OrderEntity(
     var dateTime: LocalDateTime = LocalDateTime.now(),
     var status: OrderStatus = OrderStatus.NEW,
     @Relationship(type = "ORDERED_BY", direction = Relationship.Direction.INCOMING)
-    var user: UserEntity,
+    var user: UserEntity=UserEntity(),
     var totalPrice: BigDecimal = BigDecimal.ZERO,
     @Relationship(type = "CONTAINS", direction = Relationship.Direction.OUTGOING)
-    var menuItems: MutableList<MenuItemEntity>? = mutableListOf(),
-    @Relationship(type = "HAS_DELIVERY", direction = Relationship.Direction.OUTGOING)
-    val delivery: DeliveryEntity = DeliveryEntity()
+    var itemList: MutableList<MenuItemEntity>? = mutableListOf(),
+//    @Relationship(type = "HAS_DELIVERY", direction = Relationship.Direction.OUTGOING)
+//    val delivery: DeliveryEntity = DeliveryEntity()
 )
 
-//fun IOrder.toOrderEntity() = OrderEntity(
-//    id = this.id.getUUIDFromLong(),
-//    dateTime = this.dateTime!!,
-//    status = this.status!!,
-//    userId = this.user!!.id!!.getUUIDFromLong(),
-//    totalPrice = this.totalPrice!!,
-//    menuItemsIds = this.itemList?.map { it.id.getUUIDFromLong() }?.toMutableList()
-//
-//)
-//
-//fun OrderEntity.toIOrder(iuser: IUser, items: MutableList<IMenuItem>) = Order(
-//    id = this.id!!.getLongFromUUID(),
-//    dateTime = this.dateTime,
-//    status = this.status,
-//    user = iuser,
-//    itemList = items,
-//    totalPrice = this.totalPrice
-//)
+fun IOrder.toOrderEntity() = OrderEntity(
+    id = this.id.getUUIDFromLong(),
+    dateTime = this.dateTime!!,
+    status = this.status!!,
+    user = this.user!!.toUserEntity(),
+    totalPrice = this.totalPrice!!,
+    itemList = this.itemList?.map { it.toMenuItemEntity() }!!.toMutableList()
+
+)
+
+fun OrderEntity.toIOrder() = Order(
+    id = this.id!!.getLongFromUUID(),
+    dateTime = this.dateTime,
+    status = this.status,
+    user = user.toIUser(),
+    itemList = itemList!!.map { it.toIMenuItem() }.toMutableList(),
+    totalPrice = this.totalPrice
+)
 
 
