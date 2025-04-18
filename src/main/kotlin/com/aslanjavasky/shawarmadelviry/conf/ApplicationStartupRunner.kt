@@ -11,7 +11,7 @@ import java.math.BigDecimal
 
 @Component
 class ApplicationStartupRunner(
-    @Qualifier("MenuItemRepoAdapter_Neo4j") private val menuItemRepo: MenuItemRepo
+    @Qualifier("MenuItemRepoAdapter_JPA") private val menuItemRepo: MenuItemRepo
 ) : CommandLineRunner {
 
     override fun run(vararg args: String?) {
