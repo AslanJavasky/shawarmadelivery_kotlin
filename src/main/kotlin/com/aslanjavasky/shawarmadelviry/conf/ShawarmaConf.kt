@@ -7,6 +7,5 @@ import org.springframework.security.crypto.password.PasswordEncoder
 
 @Configuration
 class ShawarmaConf {
-    @Bean
-    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
+
 }

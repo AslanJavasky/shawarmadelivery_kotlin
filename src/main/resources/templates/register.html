@@ -8,7 +8,7 @@
 </div>
 
 <h1 th:text="#{register.title}">Register</h1>
-<form th:action="@{/users/register}" th:object="${userDto}" method="post">
+<form th:action="@{/auth/register}" th:object="${user}" method="post">
     <div>
         <label for="name" th:text="#{register.name}">Name:</label>
         <input type="text" id="name" th:field="*{name}" required>
@@ -47,7 +47,7 @@
     <button type="submit" th:text="#{register.submit}">Register</button>
 </form>
 <p th:text="#{register.already_registered}">Already registered?</p>
-<a th:href="@{/users/login}">
+<a th:href="@{/auth/login}">
     <button type="button" th:text="#{register.login}">LogIn</button>
 </a>
 </body>
