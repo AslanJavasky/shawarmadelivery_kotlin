@@ -3,6 +3,7 @@ package com.aslanjavasky.shawarmadelviry.security
 import com.aslanjavasky.shawarmadelviry.security.entity.Role
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
@@ -33,16 +34,16 @@ class SecurityConfig {
         return InMemoryUserDetailsManager(user,test)
     }
 
-//    @Bean
-//    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-//
-//        http
-//            .authorizeHttpRequests { auth ->
-//            auth
-//                .requestMatchers("/auth/**").permitAll()
-//                .requestMatchers("/admin").hasRole(Role.ADMIN.name)
-//                .anyRequest().authenticated()
-//        }
+    @Bean
+    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+
+        http
+            .authorizeHttpRequests { auth ->
+            auth
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/admin").hasRole(Role.ADMIN.name)
+                .anyRequest().authenticated()
+        }
 //            .formLogin { form ->
 //                form
 //                    .loginPage("/auth/login")
@@ -57,6 +58,8 @@ class SecurityConfig {
 //                    .logoutSuccessUrl("/auth/login?logout")
 //                    .permitAll()
 //            }
-//        return http.build()
-//    }
+            .httpBasic(Customizer.withDefaults())
+
+        return http.build()
+    }
 }
