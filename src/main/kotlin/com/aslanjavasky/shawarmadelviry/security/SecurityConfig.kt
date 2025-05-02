@@ -24,11 +24,13 @@ class SecurityConfig {
         val user = User.withUsername("Aslan@com")
             .password(passwordEncoder().encode("123456"))
             .roles("USER")
+            .authorities("READ_PRIVILEGE")
             .build()
 
         val test = User.withUsername("tester")
             .password(passwordEncoder().encode("1234"))
             .roles(Role.ADMIN.name)
+            .authorities("READ_PRIVILEGE", "WRITE_PRIVILEGE")
             .build()
 
         return InMemoryUserDetailsManager(user,test)
@@ -41,7 +43,8 @@ class SecurityConfig {
             .authorizeHttpRequests { auth ->
             auth
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/admin").hasRole(Role.ADMIN.name)
+                .requestMatchers("/admin/**").hasRole(Role.ADMIN.name)
+//                .requestMatchers("/admin/**").hasAuthority("WRITE_PRIVILEGE")
                 .anyRequest().authenticated()
         }
 //            .formLogin { form ->
